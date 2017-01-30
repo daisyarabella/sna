@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JGraphT"/>
+	<classpathentry kind="lib" path="/home/mbax3dc3/Downloads/jgrapht-1.0.0/lib/jgrapht-ext-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/mbax3dc3/Downloads/jgrapht-1.0.0/lib/jgrapht-core-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/mbax3dc3/Downloads/jgrapht-1.0.0/lib/antlr4-runtime-4.5.3.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

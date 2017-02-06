@@ -1,37 +1,30 @@
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
-
-import LabelledNode.LabelledNode;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
 
 public class bernoulli {
-	
-    public static UndirectedGraph<LabelledNode, DefaultEdge> createGraph(UndirectedGraph<LabelledNode, DefaultEdge> g, int graphSize, double edgeProb) {
+    public static Graph createGraph(Graph g, int graphSize, double edgeProb) {
     	g = addAllNodes(g, graphSize, edgeProb); 
     	return g;
     }
     
-    private static UndirectedGraph<LabelledNode, DefaultEdge> addAllNodes(UndirectedGraph<LabelledNode, DefaultEdge> g, int graphSize, double edgeProb) {
-        
-        
-        for (int newNodeIndex=0; newNodeIndex<graphSize; newNodeIndex++) {
-        	LabelledNode newNode = new LabelledNode(Integer.toString(newNodeIndex), false);
-        	g.addVertex(newNode);     	
-        }
-        Object[] nodes = g.vertexSet().toArray();
-        for (int newNodeIndex=0; newNodeIndex<graphSize; newNodeIndex++) {
-        	g = formEdges(g, nodes, newNodeIndex, graphSize, edgeProb);
-        }
-        return g;
+    private static Graph addAllNodes(Graph g, int graphSize, double edgeProb) {
+      for (int newNodeIndex=0; newNodeIndex<graphSize; newNodeIndex++) {
+        g.addNode(Integer.toString(newNodeIndex));
+      }  
+      for (int newNodeIndex=0; newNodeIndex<graphSize; newNodeIndex++) {
+       g = formEdges(g, newNodeIndex, graphSize, edgeProb);
+      }
+      return g;
     }
     
-    private static UndirectedGraph<LabelledNode, DefaultEdge> formEdges(UndirectedGraph<LabelledNode, DefaultEdge> g, Object[] nodes, int newNodeIndex, int graphSize, double edgeProb) {
-    	for (int otherNodeIndex=newNodeIndex+1; otherNodeIndex<graphSize; otherNodeIndex++) {
-        	if (Math.random() < edgeProb) {
-        		LabelledNode newNode = (LabelledNode) nodes[newNodeIndex];
-        		LabelledNode otherNode = (LabelledNode) nodes[otherNodeIndex];
-       			g.addEdge(newNode, otherNode);
-        	}
+    static int edgeCount = 1;
+    private static Graph formEdges(Graph g, int newNodeIndex, int graphSize, double edgeProb) {
+      for (int otherNodeIndex=newNodeIndex+1; otherNodeIndex<graphSize; otherNodeIndex++) {
+        if (Math.random() < edgeProb) {
+       	  g.addEdge("Edge"+Integer.toString(edgeCount), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
+       		edgeCount++;
         }
-        return g;
+      }
+       return g;
     }
 }

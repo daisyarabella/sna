@@ -3,21 +3,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.alg.NeighborIndex;
-import org.jgrapht.ext.ExportException;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
-
-import LabelledNode.LabelledNode;
-//import complexAdoption;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
 
 public class graphProcessor
 {
- 	static int currentGraphSize = 0;
- 	static int totalNoEdges = 0;
-    
-    public static void process(int graphSize, double p, int generatorType, double edgeProb, int adoptionMethod) throws ExportException, IOException
+    public static void main(String args[]) throws IOException
     {
     	File timestepData = new File("output/timestepData.csv"); // file to record time step data for plotting simple line graph
     	File linearEqs = new File("output/linearEqs.csv"); // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c
@@ -25,51 +16,53 @@ public class graphProcessor
     	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
     	timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
     	linearfw.write("S(t+1),aCo,bCo,cCo\n");
+    	double edgeProb = 0;
+    	int maxLinks = 0;
     	
-    	//Scanner scanner = new Scanner(System.in);
-        //System.out.println("How many nodes?");
-        //int graphSize = scanner.nextInt();
-        //System.out.println("Set coefficient of innovation (p):");
-        //double p = p;
-        
-        //int generatorType;
-        //double edgeProb = 0;
-        //System.out.println("Select graph generator type - Bernoulli (1) or Preferential Attachment (2):");
-        /*generatorType = scanner.nextInt();
-        if (generatorType == 1) {
-            System.out.println("Enter edge probability:");
-            edgeProb = scanner.nextDouble();
-        }*/
+    	Scanner scanner = new Scanner(System.in);
+      System.out.println("How many nodes?");
+      int graphSize = scanner.nextInt();
+      System.out.println("Set coefficient of innovation (p):");
+      double p = scanner.nextDouble();
+
+      System.out.println("Select graph generator type - Bernoulli (1) or Preferential Attachment (2):");
+      int generatorType = scanner.nextInt();
+      if (generatorType == 1) {
+        System.out.println("Enter edge probability:");
+        edgeProb = scanner.nextDouble();
+      }
+      if (generatorType == 2) {
+        System.out.println("Enter max links per step:");
+        maxLinks = scanner.nextInt();
+      }
          
     	//create a graph
-        UndirectedGraph<LabelledNode, DefaultEdge> graph = generateGraph(graphSize, generatorType, edgeProb);
-        
-        //int adoptionMethod;
-        //System.out.println("Select an adoption method - Simple (1) or Complex (2):");
-        //adoptionMethod = scanner.nextInt();
-        adoptGraph(graph, adoptionMethod, p, graphSize, timestepfw, linearfw);
+      Graph graph = generateGraph(graphSize, generatorType, edgeProb, maxLinks); 
+      
+      // adopt this graph  
+      int adoptionMethod;
+      System.out.println("Select an adoption method - Simple (1) or Complex (2):");
+      adoptionMethod = scanner.nextInt();
+      adoptGraph(graph, adoptionMethod, p, graphSize, timestepfw, linearfw);
     }
         
-    // method to create adopt graphs
-    private static UndirectedGraph<LabelledNode, DefaultEdge> adoptGraph(UndirectedGraph<LabelledNode, DefaultEdge> g, int adoptionMethod, 
-        	double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {
-    	NeighborIndex<LabelledNode, DefaultEdge> ni = new NeighborIndex(g);  
-            
-        switch (adoptionMethod) {
-     	case 1: g = simpleAdoption.adopt(g, p, ni, graphSize, timestepfw, linearfw);
+    //method to create adopt graphs
+    private static Graph adoptGraph(Graph g, int adoptionMethod, 
+        	double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {       
+      switch (adoptionMethod) {
+     	case 1: g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
      	//case 2: g = complexAdoption.initAdoption(graph, p);
         }
         return g;
-    }      	
+    }   	
     
     // method to create initial random graphs 
-    private static UndirectedGraph<LabelledNode, DefaultEdge> generateGraph(int graphSize, int generatorType, double edgeProb) {
-        UndirectedGraph<LabelledNode, DefaultEdge> g = new SimpleGraph<LabelledNode, DefaultEdge>(DefaultEdge.class);
-        
+    private static Graph generateGraph(int graphSize, int generatorType, double edgeProb, int maxLinks) {     
+        Graph g = new SingleGraph("Random Graph");
         switch (generatorType) {
         	case 1: g = bernoulli.createGraph(g, graphSize, edgeProb);
         	break;
-        	case 2: g = preferentialAttachment.createGraph(g, graphSize);
+        	case 2: g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
         	break;
         }
         return g;

@@ -2,3 +2,6 @@ bin/*
 output/*
 *.class
 .metadata/*
+lib/*
+src/output
+src/remember_me

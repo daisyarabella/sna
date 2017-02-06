@@ -1,4 +1,3 @@
-package GraphProcessor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,8 +9,8 @@ import org.jgrapht.ext.ExportException;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-import GraphComponents.LabelledNode;
-//import adoptionMethods.complexAdoption;
+import LabelledNode.LabelledNode;
+//import complexAdoption;
 
 public class graphProcessor
 {
@@ -20,8 +19,8 @@ public class graphProcessor
     
     public static void process(int graphSize, double p, int generatorType, double edgeProb, int adoptionMethod) throws ExportException, IOException
     {
-    	File timestepData = new File("../output/timestepData.csv"); // file to record time step data for plotting simple line graph
-    	File linearEqs = new File("../output/linearEqs.csv"); // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c
+    	File timestepData = new File("output/timestepData.csv"); // file to record time step data for plotting simple line graph
+    	File linearEqs = new File("output/linearEqs.csv"); // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c
     	FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
     	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
     	timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
@@ -57,8 +56,8 @@ public class graphProcessor
     	NeighborIndex<LabelledNode, DefaultEdge> ni = new NeighborIndex(g);  
             
         switch (adoptionMethod) {
-     	case 1: g = AdoptionTypes.simpleAdoption.adopt(g, p, ni, graphSize, timestepfw, linearfw);
-     	//case 2: g = adoptionMethods.complexAdoption.initAdoption(graph, p);
+     	case 1: g = simpleAdoption.adopt(g, p, ni, graphSize, timestepfw, linearfw);
+     	//case 2: g = complexAdoption.initAdoption(graph, p);
         }
         return g;
     }      	
@@ -68,9 +67,9 @@ public class graphProcessor
         UndirectedGraph<LabelledNode, DefaultEdge> g = new SimpleGraph<LabelledNode, DefaultEdge>(DefaultEdge.class);
         
         switch (generatorType) {
-        	case 1: g = GraphGenerators.bernoulli.createGraph(g, graphSize, edgeProb);
+        	case 1: g = bernoulli.createGraph(g, graphSize, edgeProb);
         	break;
-        	case 2: g = GraphGenerators.preferentialAttachment.createGraph(g, graphSize);
+        	case 2: g = preferentialAttachment.createGraph(g, graphSize);
         	break;
         }
         return g;

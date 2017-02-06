@@ -2,9 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="library"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="library/antlr4-runtime-4.5.3.jar"/>
-	<classpathentry kind="lib" path="library/jgrapht-core-1.0.0.jar"/>
-	<classpathentry kind="lib" path="library/jgrapht-ext-1.0.0.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/antlr4-runtime-4.5.3.jar"/>
+	<classpathentry kind="lib" path="lib/jgraph-5.13.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-core-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-demo-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-ext-1.0.0-uber.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-ext-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jgraphx-2.0.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/daisy/sna-java/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

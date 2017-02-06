@@ -1,5 +1,3 @@
-package AdoptionTypes;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
@@ -9,7 +7,7 @@ import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.ext.ExportException;
 import org.jgrapht.graph.DefaultEdge;
 
-import GraphComponents.LabelledNode;
+import LabelledNode.LabelledNode;
 
 public class simpleAdoption {
 	static int Yt = 0; // Y(t)
@@ -27,7 +25,7 @@ public class simpleAdoption {
      		graph = initAdoption(graph, p);
      	}
         try {
-        	InputOutput.exporter.exportGraphML(graph);
+        	exporter.exportGraphML(graph);
     	} catch (ExportException e) {
     		// TODO Auto-generated catch block
    			e.printStackTrace();

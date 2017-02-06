@@ -115,7 +115,7 @@ public static void main(String[] args) {
             	System.out.println("p: " +p);
             	System.out.println("edge prob: " +edgeProb);
             	
-				GraphProcessor.graphProcessor.process(graphSize, p, generatorType, edgeProb, adoptionMethod);
+				graphProcessor.process(graphSize, p, generatorType, edgeProb, adoptionMethod);
 			} catch (ExportException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

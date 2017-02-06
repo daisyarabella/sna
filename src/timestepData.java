@@ -1,4 +1,3 @@
-package InputOutput;
 public class timestepData {
 	private int t;
 	private int Yt;

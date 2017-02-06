@@ -1,9 +1,9 @@
-package GraphComponents;
+package NameProvider;
 
 import org.jgrapht.ext.EdgeNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
 
-import GraphComponents.LabelledNode;
+import LabelledNode.LabelledNode;
 
 public class NameProvider extends Object implements VertexNameProvider {
 	public String getVertexName(Object node) {

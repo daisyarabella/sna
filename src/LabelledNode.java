@@ -1,7 +1,4 @@
-package GraphComponents;
-
-import org.jgrapht.ext.EdgeNameProvider;
-import org.jgrapht.ext.VertexNameProvider;
+package LabelledNode;
 
 public class LabelledNode extends Object {
 	private String label;

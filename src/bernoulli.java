@@ -1,9 +1,7 @@
-package GraphGenerators;
-
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import GraphComponents.LabelledNode;
+import LabelledNode.LabelledNode;
 
 public class bernoulli {
 	

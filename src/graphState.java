@@ -1,4 +1,3 @@
-package GraphState;
 public class graphState extends Object {
 	
  	private int Yt;

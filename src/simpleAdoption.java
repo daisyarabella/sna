@@ -11,6 +11,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.Path;
 import org.graphstream.graph.implementations.*;
+import org.graphstream.stream.ProxyPipe;
 
 
 public class simpleAdoption {
@@ -21,10 +22,20 @@ public class simpleAdoption {
  	static int t = 0; 
  	static boolean internalAdoptionHappen = false;
  	
+	// go through simple adoption process
  	public static Graph adopt(Graph g, double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {
- 	g.addAttribute("ui.stylesheet", "node.adopted {fill-color:red;}");
- 	do {
+
+	g.addAttribute("ui.stylesheet", stylesheet);
+ 	Yt = 0; // Y(t)
+ 	Ytadd1 = 0; // Y(t+1)
+ 	intAdoptionCount = 0;
+ 	extAdoptionCount = 0;
+ 	t = 0; 
+ 	internalAdoptionHappen = false;
+        
+      do {
      	internalAdoptionHappen = false;
+        
      	if (Yt == 0) {
      		g = initAdoption(g, p);
      	}
@@ -32,25 +43,28 @@ public class simpleAdoption {
     	if (!internalAdoptionHappen) {       			
     		g = externalAdoption(g,p);			
     	}
+
       //exportCSV files
-      timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
-      linearfw.write(Ytadd1-Yt + "," + 1 + "," + Yt + "," + Yt*Yt + "\n");
+      //timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
+      //linearfw.write(Ytadd1-Yt + "," + 1 + "," + Yt + "," + Yt*Yt + "\n");
       System.out.println("t: " +t+ "\t Y(t+1): " +Ytadd1+ "\t Y(t): " +Yt);
       t++;
-      g.display();
       } while (Yt < graphSize);
      	  timestepfw.close();
      	  linearfw.close();
+
      	  System.out.println("External adoptions: " + extAdoptionCount + ", Internal adoptions: " +intAdoptionCount);
      	System.out.println("Finished");
 		return g;
 	}
 
+	// adopt the first few nodes externally
 	public static Graph initAdoption(Graph g, double p) {
     for (Node n:g) {
     	if (Math.random() < p) {
        	n.setAttribute("adopted");
        	n.setAttribute("ui.class", "adopted");
+	sleep();
    			Yt++;
    			Ytadd1++;
    			extAdoptionCount++;
@@ -79,7 +93,7 @@ public class simpleAdoption {
     				if (!neighbor.hasAttribute("adopted")) {
     					neighbor.setAttribute("adopted"); 
     					neighbor.setAttribute("ui.class", "adopted");
-    					//System.out.println("Node " +neighbor+ "is Adopted internally");
+					sleep();
     					Ytadd1++;
     					intAdoptionCount++;
     					internalAdoptionHappen = true;
@@ -97,7 +111,7 @@ public class simpleAdoption {
     				if (Math.random() < p) {
     					n.setAttribute("adopted");
     					n.setAttribute("ui.class", "adopted");
-    					//System.out.println("Node " +n+ "is Adopted externally");
+					sleep();
     					Ytadd1++;
     					extAdoptionCount++;
     			}
@@ -105,4 +119,21 @@ public class simpleAdoption {
     	}
 		return g;
     } 
+
+	protected static void sleep() {
+            try {
+                Thread.sleep(150); 
+		//Thread.currentThread().interrupt(); 
+	    } catch (Exception e) {}
+        }
+
+	protected static String stylesheet =
+            "node {" +
+            "	fill-color: navy;" +
+            "}" +
+            "node.adopted {" +
+            "	fill-color: orange;" +
+            "}";
+
+        
 }

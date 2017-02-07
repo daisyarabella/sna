@@ -13,7 +13,7 @@ import java.io.IOException;
 
 //import org.graphstream.ui.swingViewer.Viewer;
  
-public class aGUI {
+public class GUI {
   public static boolean RIGHT_TO_LEFT = false;
   public static JPanel graphPanel = new JPanel();
   

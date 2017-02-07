@@ -7,7 +7,7 @@ public class euclidean {
     Generator gen = new RandomEuclideanGenerator();
     gen.addSink(g);
     gen.begin();
-    for (int newNodeIndex=1;newNodeIndex<graphSize-1;newNodeIndex++) {
+    for (int newNodeIndex=1;newNodeIndex<graphSize;newNodeIndex++) {
       gen.nextEvents();
     }
     gen.end();

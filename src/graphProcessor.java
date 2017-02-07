@@ -5,10 +5,10 @@ import java.util.Scanner;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
-import org.graphstream.ui.view.View;
-import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.swingViewer.ViewPanel;
-import org.graphstream.ui.graphicGraph.GraphicGraph;
+//import org.graphstream.ui.view.View;
+//import org.graphstream.ui.view.Viewer;
+//import org.graphstream.ui.swingViewer.ViewPanel;
+//import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.stream.thread.ThreadProxyPipe;
 import org.graphstream.stream.ProxyPipe;
 

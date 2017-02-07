@@ -7,7 +7,7 @@ public class dorogovtsev {
     Generator gen = new DorogovtsevMendesGenerator();
     gen.addSink(g);
     gen.begin();
-    for (int newNodeIndex=1;newNodeIndex<graphSize-1;newNodeIndex++) {
+    for (int newNodeIndex=1;newNodeIndex<graphSize-2;newNodeIndex++) {
       gen.nextEvents();
     }
     gen.end();

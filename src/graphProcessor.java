@@ -103,23 +103,36 @@ public class graphProcessor
     private static Graph adoptGraph(Graph g, String adoptionType, 
         	double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {       
       switch (adoptionType) {
-     	case "Simple": g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
-        break;
-     	//case "Complex": g = complexAdoption.initAdoption(graph, p);
-	default: g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
+     	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
+          break;
+     	
+       	//case "Complex": g = complexAdoption.initAdoption(graph, p);
+	      
+	      default: g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
         }
         return g;
     }   	
     
     // method to create initial random graphs 
     private static Graph generateGraph(int graphSize, String generatorType, double edgeProb, int maxLinks) {     
-        Graph g = new SingleGraph("Random Graph");
-        switch (generatorType) {
-        	case "Bernoulli": g = bernoulli.createGraph(g, graphSize, edgeProb);
+      Graph g = new SingleGraph("Random Graph");
+      switch (generatorType) {
+      	case "Bernoulli": g = bernoulli.createGraph(g, graphSize, edgeProb);
         	break;
-        	case "Preferential Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
+        	
+      	case "Preferential Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
         	break;
-		default: g = bernoulli.createGraph(g, graphSize, edgeProb);
+        	
+        case "Dorogovtsev": g = dorogovtsev.createGraph(g, graphSize);
+        	break;
+        	
+        case "Square Grid": g = squareGrids.createGraph(g, graphSize);
+        	break;
+        	
+        case "Euclidean": g = euclidean.createGraph(g, graphSize);
+        	break;
+		
+		    default: g = bernoulli.createGraph(g, graphSize, edgeProb);
         }
         return g;
     }  

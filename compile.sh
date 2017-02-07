@@ -1,3 +1,4 @@
-mkdir -p classes
+#! /bin/bash
 
-javac -classpath lib/\* -sourcepath src/ -d classes src/*.java
+mkdir -p classes
+~/java/jdk1.8.0_121/bin/javac -classpath lib/\* -sourcepath src/ -d classes src/*.java

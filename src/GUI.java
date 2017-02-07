@@ -32,8 +32,11 @@ public class GUI {
     JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", 0.38, pane);
     JFormattedTextField edgeProbInput = addDoubleTextField("Edge probability (Bernoulli only): ", 0.05, pane);
     JFormattedTextField maxLinksInput = addIntTextField("Maximum links (Pref. Attachment only): ", 3, pane);
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", 150, pane);
 
-    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, graphSizeInput, pInput, edgeProbInput, maxLinksInput, frame);
+    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, 
+                                             graphSizeInput, pInput, edgeProbInput, 
+                                             maxLinksInput, sleepTimeInput, frame);
     
     addButton("Generate and adopt!", pane, al);
   }
@@ -90,10 +93,11 @@ public class GUI {
                               JComboBox<String> adoptionTypeInput, 
                               JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
                               JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
-                              JFrame frame) {
+                              JFormattedTextField sleepTimeInput, JFrame frame) {
     return new ActionListener() {
       public void actionPerformed(ActionEvent e) { 
-        onClick(graphGenTypeInput, adoptionTypeInput, graphSizeInput, pInput, edgeProbInput, maxLinksInput, frame);
+        onClick(graphGenTypeInput, adoptionTypeInput, graphSizeInput, pInput, 
+                edgeProbInput, maxLinksInput, sleepTimeInput, frame);
       }
     };
   }
@@ -102,16 +106,17 @@ public class GUI {
                               JComboBox<String> adoptionTypeInput, 
                               JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
                               JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
-			      JFrame frame) {
+			                        JFormattedTextField sleepTimeInput, JFrame frame) {
     String graphGenType = (String)graphGenTypeInput.getSelectedItem();
     String adoptionType = (String)adoptionTypeInput.getSelectedItem();
     int graphSize = (int)graphSizeInput.getValue();
     double p = (double)pInput.getValue(); 
     double edgeProb = (double)edgeProbInput.getValue(); 
     int maxLinks = (int)maxLinksInput.getValue();
+    int sleepTime = (int)sleepTimeInput.getValue();
     try {
-      frame.getContentPane().remove(graphPanel);
-      graphPanel = graphProcessor.process(graphGenType, adoptionType, graphSize, p, edgeProb, maxLinks, frame);
+      //frame.getContentPane().remove(graphPanel);
+      graphProcessor.process(graphGenType, adoptionType, graphSize, p, edgeProb, maxLinks, sleepTime, frame);
      
     } catch (IOException error) {
       error.printStackTrace();

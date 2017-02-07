@@ -23,7 +23,8 @@ public class simpleAdoption {
  	static boolean internalAdoptionHappen = false;
  	
 	// go through simple adoption process
- 	public static Graph adopt(Graph g, double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {
+ 	public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
+ 	                          FileWriter timestepfw, FileWriter linearfw) throws IOException {
 
 	g.addAttribute("ui.stylesheet", stylesheet);
  	Yt = 0; // Y(t)
@@ -37,11 +38,11 @@ public class simpleAdoption {
      	internalAdoptionHappen = false;
         
      	if (Yt == 0) {
-     		g = initAdoption(g, p);
+     		g = initAdoption(g, p, sleepTime);
      	}
-    	g = internalAdoption(g,p);
+    	g = internalAdoption(g, p, sleepTime);
     	if (!internalAdoptionHappen) {       			
-    		g = externalAdoption(g,p);			
+    		g = externalAdoption(g, p, sleepTime);			
     	}
 
       //exportCSV files
@@ -59,12 +60,12 @@ public class simpleAdoption {
 	}
 
 	// adopt the first few nodes externally
-	public static Graph initAdoption(Graph g, double p) {
+	public static Graph initAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
     	if (Math.random() < p) {
        	n.setAttribute("adopted");
        	n.setAttribute("ui.class", "adopted");
-	sleep();
+	      sleep(sleepTime);
    			Yt++;
    			Ytadd1++;
    			extAdoptionCount++;
@@ -74,7 +75,7 @@ public class simpleAdoption {
   }
     
     // method to make all neighbours of adopted nodes adopted
-    private static Graph internalAdoption(Graph g, double p) {
+    private static Graph internalAdoption(Graph g, double p, int sleepTime) {
     	Yt = Ytadd1;
     	for (Node n:g) {
     		// if node has adopted, getNeighbors of node
@@ -93,7 +94,7 @@ public class simpleAdoption {
     				if (!neighbor.hasAttribute("adopted")) {
     					neighbor.setAttribute("adopted"); 
     					neighbor.setAttribute("ui.class", "adopted");
-					sleep();
+					    sleep(sleepTime);
     					Ytadd1++;
     					intAdoptionCount++;
     					internalAdoptionHappen = true;
@@ -104,14 +105,14 @@ public class simpleAdoption {
 		return g;
     }
 
-    private static Graph externalAdoption(Graph g, double p) {
+    private static Graph externalAdoption(Graph g, double p, int sleepTime) {
     	Yt = Ytadd1;
     	for (Node n:g) {
     		if (!n.hasAttribute("adopted")) {
     				if (Math.random() < p) {
     					n.setAttribute("adopted");
     					n.setAttribute("ui.class", "adopted");
-					sleep();
+					    sleep(sleepTime);
     					Ytadd1++;
     					extAdoptionCount++;
     			}
@@ -120,12 +121,12 @@ public class simpleAdoption {
 		return g;
     } 
 
-	protected static void sleep() {
-            try {
-                Thread.sleep(150); 
-		//Thread.currentThread().interrupt(); 
-	    } catch (Exception e) {}
-        }
+	protected static void sleep(int sleepTime) {
+    try {
+      Thread.sleep(sleepTime); 
+		  //Thread.currentThread().interrupt(); 
+	  } catch (Exception e) {}
+      }
 
 	protected static String stylesheet =
             "node {" +

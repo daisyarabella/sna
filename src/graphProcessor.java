@@ -58,9 +58,9 @@ public class graphProcessor
       adoptGraph(graph, adoptionType, p, graphSize, timestepfw, linearfw);
     }*/
 
-    public static JPanel process(String graphGenType, String adoptionType, 
+    public static void process(String graphGenType, String adoptionType, 
                            int graphSize, double p, double edgeProb, int maxLinks,
-                           JFrame frame) throws IOException {
+                           int sleepTime, JFrame frame) throws IOException {
       
       // file to record time step data for plotting simple line graph
       File timestepData = new File("output/timestepData.csv");
@@ -73,8 +73,11 @@ public class graphProcessor
       linearfw.write("S(t+1),aCo,bCo,cCo\n");
       
       Graph graph = generateGraph(graphSize, graphGenType, edgeProb, maxLinks);
+      graph.display();
+      
+      //adoptGraph(graph, adoptionType, p, graphSize, timestepfw, linearfw);
 
-      Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+      /*Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
       viewer.enableAutoLayout();
       viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
       ViewPanel view = viewer.addDefaultView(false);
@@ -86,29 +89,31 @@ public class graphProcessor
       panel.add(view);
       frame.getContentPane().add(panel);
       frame.pack();
-
+      */
+       
       Thread adoptionThread = new Thread(new Runnable() {
          public void run() {
            try {
-             adoptGraph(graph, adoptionType, p, graphSize, timestepfw, linearfw);
+             adoptGraph(graph, adoptionType, p, graphSize, sleepTime, timestepfw, linearfw);
            } catch (Exception e) {}
          }
       });  
       adoptionThread.start();
       
-      return panel;
+      //return panel;
     }
         
     //method to create adopt graphs
     private static Graph adoptGraph(Graph g, String adoptionType, 
-        	double p, int graphSize, FileWriter timestepfw, FileWriter linearfw) throws IOException {       
+        	                          double p, int graphSize, int sleepTime, 
+        	                          FileWriter timestepfw, FileWriter linearfw) throws IOException {       
       switch (adoptionType) {
-     	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
+     	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
           break;
      	
-       	//case "Complex": g = complexAdoption.initAdoption(graph, p);
+       	//case "Complex": g = complexAdoption.initAdoption(graph, p, sleepTime, timestepfw, linearfw);
 	      
-	      default: g = simpleAdoption.adopt(g, p, graphSize, timestepfw, linearfw);
+	      default: g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
         }
         return g;
     }   	

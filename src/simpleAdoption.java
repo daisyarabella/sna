@@ -55,7 +55,6 @@ public class simpleAdoption {
       linearfw.write(Ytadd1-Yt + "," + 1 + "," + Yt + "," + Yt*Yt + "\n");
       
       // print timestep data to terminal and timestep data GUI
-      //System.out.println("t: " +t+ "\t Y(t+1): " +Ytadd1+ "\t Y(t): " +Yt);
       textArea.append("t: " +t+ "\t Y(t+1): " +Ytadd1+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
 
       // add the timestep data to int[] arrays for display in plot
@@ -73,9 +72,6 @@ public class simpleAdoption {
       lineChart.setSize(600,350);
       lineChart.show();
 
-      //System.out.println("External adoptions: " + extAdoptionCount + ", Internal adoptions: " +intAdoptionCount);
-      //System.out.println("Finished");
-      //textArea.append("External adoptions: " + extAdoptionCount + ", Internal adoptions: " +intAdoptionCount+"\n");
       textArea.append("Finished\n");
       return g;
   }

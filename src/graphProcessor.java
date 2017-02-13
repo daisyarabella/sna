@@ -111,9 +111,10 @@ public class graphProcessor
      	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
           break;
      	
-       	//case "Complex": g = complexAdoption.initAdoption(graph, p, sleepTime, timestepfw, linearfw);
-	      
-	      default: g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
+       	  case "Complex": g = complexAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
+	  break;
+    
+	  default: g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
         }
         return g;
     }   	

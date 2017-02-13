@@ -4,6 +4,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.AbstractCollection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.SortedMap;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.lang.Math;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.Edge;
@@ -26,16 +38,60 @@ public class complexAdoption {
   public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
                             FileWriter timestepfw, FileWriter linearfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
-    int[] nodeDegrees = new int[graphSize];
-  
+    
+    TreeMap<String,Integer> nodeDegrees = new TreeMap<String,Integer>();
+
     for (Node n:g) {
-      nodenodeDegrees[n.getDegree()];
+      nodeDegrees.put(n.getId(), n.getDegree());
     }
+    
+    Set mapData = nodeDegrees.entrySet();
+    LinkedHashMap<String,Integer> sortedNodeDegrees = sortSetByValues(mapData);
+    System.out.println(sortedNodeDegrees); 
+    HashMap popularNodes = getPopularNodes(0.3,sortedNodeDegrees);
+    System.out.println(popularNodes);
+
     
 
     return g;
   }
   
+  private static LinkedHashMap<String,Integer> sortSetByValues(Set mapData) {
+    List<Entry<String,Integer>> linkedList = new LinkedList<Entry<String,Integer>>(mapData);
+
+    // Sort list
+    Collections.sort(linkedList, new Comparator<Entry<String,Integer>>() {
+      @Override
+      public int compare(Entry<String,Integer> ele1, Entry<String, Integer> ele2) {
+        return ele2.getValue().compareTo(ele1.getValue());
+      }
+    });
+      
+    // Storing the list into TreeMap to preserve the order of insertion. 
+    LinkedHashMap<String,Integer> sortedNodeDegrees = new LinkedHashMap<String,Integer>();
+    for(Entry<String,Integer> entry: linkedList) {
+       sortedNodeDegrees.put(entry.getKey(), entry.getValue());
+       System.out.println("Node: " +entry.getKey()+ " Value: " +entry.getValue());
+    }
+    System.out.println(sortedNodeDegrees);
+    return sortedNodeDegrees;
+  }
+
+  private static HashMap getPopularNodes(double percentageOfNodes, 
+                                                           LinkedHashMap<String,Integer> sortedTreeMap) {
+    int mapSize = sortedTreeMap.size();
+    int numberToTake = (int) Math.floor(mapSize*percentageOfNodes);
+    int index = 0;
+    HashMap popularNodes = new HashMap();
+    for (String key : sortedTreeMap.keySet()) {
+      if (index < numberToTake) {
+        popularNodes.put(key, 1);
+      }
+      index++;
+    }
+    return popularNodes;
+  }
+
   // adopt the first few nodes externally
   public static Graph initAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {

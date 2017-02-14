@@ -26,8 +26,8 @@ public class GUI {
     pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
     
     addPanel("Graph generator", pane);
-    //String[] generatorOptions = {"Bernoulli","Preferential Attachment", "Dorogovtsev", "Square Grid", "Euclidean"};
-    String[] generatorOptions = {"Bernoulli","Preferential Attachment"};
+    String[] generatorOptions = {"Bernoulli","Preferential Attachment", "Dorogovtsev", "Square Grid", "Euclidean"};
+    //String[] generatorOptions = {"Bernoulli","Preferential Attachment"};
     JComboBox<String> graphGenTypeInput = addComboBox(generatorOptions, pane);
 
     addPanel("Adoption type", pane);

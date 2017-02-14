@@ -70,7 +70,7 @@ public class graphProcessor
       FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
       FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
       timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
-      linearfw.write("S(t+1),aCo,bCo,cCo\n");
+      linearfw.write("Stadd1,aCo,bCo,cCo\n");
       
       Graph graph = generateGraph(graphSize, graphGenType, edgeProb, maxLinks);
       graph.display();

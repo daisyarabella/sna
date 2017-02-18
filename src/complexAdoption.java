@@ -33,37 +33,37 @@ public class complexAdoption {
   static int intAdoptionCount = 0;
   static int extAdoptionCount = 0;
   static int t = 0; 
-  static int halfAdoptedTime = 0;
+  static int adoptionNotHappenStreak = 0;
+  static boolean adoptionHappen;
 	
   // go through complex adoption process
   public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
                             FileWriter timestepfw, FileWriter linearfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
+    JTextArea textArea = GUI.makeTimestepDataGUI();
 
     int[] totalAdopters = new int[10*graphSize];
     int[] extAdopters = new int[10*graphSize];
     int[] intAdopters = new int[10*graphSize];
 
-    JTextArea textArea = GUI.makeTimestepDataGUI();  
-    
-    // find popular nodes for termination condition
-    TreeMap<String,Integer> nodeDegrees = new TreeMap<String,Integer>();
-    for (Node n:g) {
-      nodeDegrees.put(n.getId(), n.getDegree());
-    }
-    Set mapData = nodeDegrees.entrySet();
-    LinkedHashMap<String,Integer> sortedNodeDegrees = sortSetByValues(mapData);
-    HashMap popularNodes = getPopularNodes(0.3,sortedNodeDegrees);
-    
-    boolean done = false;
+    double pDecrementValue = p/3;
+    double pDecrementer = p;
 
     do {
+      adoptionHappen = false;
       if (Yt == 0) {
-        g = initAdoption(g, p, sleepTime, graphSize);
+        g = externalAdoption(g, pDecrementer, sleepTime);
+        pDecrementer -= pDecrementValue;
       }
-      g = internalAdoption(g, p, sleepTime, graphSize);
-      if ((Yt>=(graphSize/2)) && checkPopularNeighboursAdopted(g,popularNodes,0.3,graphSize)) { 
-        done = true;
+      else {
+        if (pDecrementer > 0) {
+          g = externalAdoption(g, pDecrementer, sleepTime);
+          pDecrementer -= pDecrementValue;
+          g = internalAdoption(g, sleepTime);
+        }
+        else {
+          g = internalAdoption(g, sleepTime);
+        }
       }
  
       //exportCSV files
@@ -78,10 +78,13 @@ public class complexAdoption {
       extAdopters[t] = extAdoptionCount;
       intAdopters[t] = intAdoptionCount;
       t++;
-      if (t == (halfAdoptedTime*2)) {
-        done = true;
+      if (!adoptionHappen) {
+        adoptionNotHappenStreak++;
       }
-    } while (!done);
+      else {
+        adoptionNotHappenStreak = 0;
+      }
+    } while (adoptionNotHappenStreak < 3);
 
     timestepfw.close();
     linearfw.close();
@@ -96,63 +99,28 @@ public class complexAdoption {
     return g;
   }
   
-  private static LinkedHashMap<String,Integer> sortSetByValues(Set mapData) {
-    List<Entry<String,Integer>> linkedList = new LinkedList<Entry<String,Integer>>(mapData);
-
-    // Sort list
-    Collections.sort(linkedList, new Comparator<Entry<String,Integer>>() {
-      @Override
-      public int compare(Entry<String,Integer> ele1, Entry<String, Integer> ele2) {
-        return ele2.getValue().compareTo(ele1.getValue());
-      }
-    });
-      
-    // Storing the list into TreeMap to preserve the order of insertion. 
-    LinkedHashMap<String,Integer> sortedNodeDegrees = new LinkedHashMap<String,Integer>();
-    for(Entry<String,Integer> entry: linkedList) {
-       sortedNodeDegrees.put(entry.getKey(), entry.getValue());
-       //System.out.println("Node: " +entry.getKey()+ " Value: " +entry.getValue());
-    }
-    return sortedNodeDegrees;
-  }
-
-  private static HashMap getPopularNodes(double percentageOfNodes, 
-                                                           LinkedHashMap<String,Integer> sortedTreeMap) {
-    int mapSize = sortedTreeMap.size();
-    int numberToTake = (int) Math.floor(mapSize*percentageOfNodes);
-    int index = 0;
-    HashMap popularNodes = new HashMap();
-    for (String key : sortedTreeMap.keySet()) {
-      if (index < numberToTake) {
-        popularNodes.put(key, 1);
-      }
-      index++;
-    }
-    return popularNodes;
-  }
-
   // adopt the first few nodes externally
-  public static Graph initAdoption(Graph g, double p, int sleepTime, int graphSize) {
+  public static Graph externalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
       if (Math.random() < p) {
         n.setAttribute("adopted");
         n.setAttribute("ui.class", "adopted");
+        adoptionHappen = true;
 	sleep(sleepTime);
    	Yt++;
    	Ytadd1++;
    	extAdoptionCount++;
       }
     }
-    if (Yt >= (graphSize/2)) {
-      halfAdoptedTime = Yt;
-    }
     return g;
   }
    
   // method to make all neighbours of adopted nodes adopted
-  private static Graph internalAdoption(Graph g, double p, int sleepTime, int graphSize) {
+  private static Graph internalAdoption(Graph g, int sleepTime) {
     Yt = Ytadd1;
+    int neighbourThreshold = 3;
     for (Node n:g) {
+      int adoptedNeighbourCount = 0;
       // if node has adopted, getNeighbors of node
       if (!n.hasAttribute("adopted")) {
         Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
@@ -165,50 +133,22 @@ public class complexAdoption {
     	  }
     	}
     	
-        // assign all neighbors with adopted attribute
-    	for (Node neighbor : neighbors) {
-    	  if (!neighbor.hasAttribute("adopted")) {
-    	    neighbor.setAttribute("adopted"); 
-    	    neighbor.setAttribute("ui.class", "adopted");
-	    sleep(sleepTime);
-    	    Ytadd1++;
-    	    intAdoptionCount++;
+    	  if (neighbor.hasAttribute("adopted")) {
+            adoptedNeighbourCount++;
           }
-        } 
+        }
+        
+        if (adoptedNeighbourCount >= neighbourThreshold) {
+          n.setAttribute("adopted"); 
+    	  n.setAttribute("ui.class", "adopted");
+          adoptionHappen = true;
+	  sleep(sleepTime);
+    	  Ytadd1++;
+    	  intAdoptionCount++;
+        }
       }
-    }
-    if (Yt >= (graphSize/2)) {
-      halfAdoptedTime = t;
     }
     return g;
-  }
-
-  private static boolean checkPopularNeighboursAdopted(Graph g, HashMap<String,Integer> popularNodes, 
-                                                       double percentage, int graphSize) {
-    boolean allPopularNodeNeighboursAdopted = true;
-    int neighboursToBeAdopted = (int) Math.floor(graphSize*percentage);
-    for (String nodeIndex : popularNodes.keySet()) {
-      int noNeighboursAdopted = 0;
-      Node n = g.getNode(Integer.parseInt(nodeIndex));
-      Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
-      List<Node> neighbors = new ArrayList<Node>();
-      while (edgesOfNodeN.hasNext()) {
-        Edge nextEdge = edgesOfNodeN.next();
-        Node thisNeighbor = nextEdge.getOpposite(n);
-        if (!neighbors.contains(thisNeighbor)) {
-          neighbors.add(thisNeighbor);
-        }
-      }
-      for (Node neighbor : neighbors) {
-    	if (neighbor.hasAttribute("adopted")) {
-          noNeighboursAdopted++;
-        }
-      }
-      if (noNeighboursAdopted < neighboursToBeAdopted) {
-        allPopularNodeNeighboursAdopted = false;
-      }
-    }
-    return allPopularNodeNeighboursAdopted;
   }
 
   protected static void sleep(int sleepTime) {

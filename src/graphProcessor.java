@@ -20,57 +20,20 @@ import java.awt.Dimension;
 
 public class graphProcessor
 {
-    /*public static void main(String args[]) throws IOException
-    {
-    	File timestepData = new File("output/timestepData.csv"); // file to record time step data for plotting simple line graph
-    	File linearEqs = new File("output/linearEqs.csv"); // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c
-    	FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
-    	FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
-    	timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
-    	linearfw.write("S(t+1),aCo,bCo,cCo\n");
-    	double edgeProb = 0;
-    	int maxLinks = 0;
-    	
-      Scanner scanner = new Scanner(System.in);
-      System.out.println("How many nodes?");
-      int graphSize = scanner.nextInt();
-      System.out.println("Set coefficient of innovation (p):");
-      double p = scanner.nextDouble();
-
-      System.out.println("Select graph generator type - Bernoulli (1) or Preferential Attachment (2):");
-      int generatorType = scanner.nextInt();
-      if (generatorType == 1) {
-        System.out.println("Enter edge probability:");
-        edgeProb = scanner.nextDouble();
-      }
-      if (generatorType == 2) {
-        System.out.println("Enter max links per step:");
-        maxLinks = scanner.nextInt();
-      }
-         
-      //create a graph
-      Graph graph = generateGraph(graphSize, generatorType, edgeProb, maxLinks); 
-      // adopt this graph  
-      int adoptionType;
-      System.out.println("Select an adoption method - Simple (1) or Complex (2):");
-      adoptionType = scanner.nextInt();
-      graph.display();
-      adoptGraph(graph, adoptionType, p, graphSize, timestepfw, linearfw);
-    }*/
-
     public static void process(String graphGenType, String adoptionType, 
                            int graphSize, double p, double edgeProb, int maxLinks,
-                           int sleepTime, JFrame frame) throws IOException {
+                           int sleepTime, int decrements, int neighborThreshold,
+                           JFrame frame) throws IOException {
       
       // file to record time step data for plotting simple line graph
       File timestepData = new File("output/timestepData.csv");
       // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c 
-      File linearEqs = new File("output/linearEqs.csv"); 
+      File regressionAnalysis = new File("output/regressionAnalysis.csv"); 
       
       FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
-      FileWriter linearfw = new FileWriter(linearEqs.getAbsoluteFile());
+      FileWriter regressionAnalysisfw = new FileWriter(regressionAnalysis.getAbsoluteFile());
       timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
-      linearfw.write("Stadd1,aCo,bCo,cCo\n");
+      regressionAnalysisfw.write("t,Yt\n");
       
       Graph graph = generateGraph(graphSize, graphGenType, edgeProb, maxLinks);
       graph.display();
@@ -94,27 +57,27 @@ public class graphProcessor
       Thread adoptionThread = new Thread(new Runnable() {
          public void run() {
            try {
-             adoptGraph(graph, adoptionType, p, graphSize, sleepTime, timestepfw, linearfw);
+             adoptGraph(graph, adoptionType, p, graphSize, sleepTime, 
+                        timestepfw, regressionAnalysisfw, decrements, neighborThreshold);
            } catch (Exception e) {}
          }
       });  
       adoptionThread.start();
-      
-      //return panel;
     }
         
     //method to create adopt graphs
     private static Graph adoptGraph(Graph g, String adoptionType, 
         	                          double p, int graphSize, int sleepTime, 
-        	                          FileWriter timestepfw, FileWriter linearfw) throws IOException {       
+        	                          FileWriter timestepfw, FileWriter regressionAnalysisfw,
+                                          int decrements, int neighborThreshold) throws IOException {       
       switch (adoptionType) {
-     	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
+     	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, regressionAnalysisfw);
           break;
      	
-       	  case "Complex": g = complexAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
+       	  case "Complex": g = complexAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, regressionAnalysisfw, decrements, neighborThreshold);
 	  break;
     
-	  default: g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, linearfw);
+	  default: g = simpleAdoption.adopt(g, p, graphSize, sleepTime, timestepfw, regressionAnalysisfw);
         }
         return g;
     }   	

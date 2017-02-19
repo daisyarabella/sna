@@ -17,7 +17,6 @@ import javax.swing.JFrame;
 
 public class simpleAdoption {
   static int Yt = 0; // Y(t)
-  static int Ytadd1 = 0; // Y(t+1)
   static int intAdoptionCount = 0;
   static int extAdoptionCount = 0;
   static int t = 0; 
@@ -25,10 +24,9 @@ public class simpleAdoption {
 	
   // go through simple adoption process
   public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
-                            FileWriter timestepfw, FileWriter linearfw) throws IOException {
+                            FileWriter timestepfw, FileWriter regressionAnalysisfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
     Yt = 0; // Y(t)
-    Ytadd1 = 0; // Y(t+1)
     intAdoptionCount = 0;
     extAdoptionCount = 0;
     t = 0; 
@@ -42,6 +40,14 @@ public class simpleAdoption {
 
     do {
       internalAdoptionHappen = false; 
+
+      totalAdopters[t] = Yt;
+      extAdopters[t] = extAdoptionCount;
+      intAdopters[t] = intAdoptionCount;
+
+      // print timestep data to timestep data GUI
+      textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
+
       if (Yt == 0) {
         g = initAdoption(g, p, sleepTime);
       }
@@ -52,20 +58,12 @@ public class simpleAdoption {
 
       //exportCSV files
       timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
-      linearfw.write(Ytadd1-Yt + "," + 1 + "," + Yt + "," + Yt*Yt + "\n");
-      
-      // print timestep data to terminal and timestep data GUI
-      textArea.append("t: " +t+ "\t Y(t+1): " +Ytadd1+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
-
-      // add the timestep data to int[] arrays for display in plot
-      totalAdopters[t] = Yt;
-      extAdopters[t] = extAdoptionCount;
-      intAdopters[t] = intAdoptionCount;
+      regressionAnalysisfw.write(t + "," + Yt+"\n");
       t++;
       } while (Yt < graphSize);
       
       timestepfw.close();
-      linearfw.close();
+      regressionAnalysisfw.close();
 
       LineChart lineChart = new LineChart("Plot - adoption over time", "Number of adoptions over time", 
                                           totalAdopters, extAdopters, intAdopters, t);
@@ -84,7 +82,6 @@ public class simpleAdoption {
         n.setAttribute("ui.class", "adopted");
 	sleep(sleepTime);
    	Yt++;
-   	Ytadd1++;
    	extAdoptionCount++;
       }
     }
@@ -93,7 +90,6 @@ public class simpleAdoption {
     
   // method to make all neighbours of adopted nodes adopted
   private static Graph internalAdoption(Graph g, double p, int sleepTime) {
-    Yt = Ytadd1;
     for (Node n:g) {
       // if node has adopted, getNeighbors of node
       if (!n.hasAttribute("adopted")) {
@@ -113,7 +109,7 @@ public class simpleAdoption {
     	    neighbor.setAttribute("adopted"); 
     	    neighbor.setAttribute("ui.class", "adopted");
 	    sleep(sleepTime);
-    	    Ytadd1++;
+            Yt++;
     	    intAdoptionCount++;
     	    internalAdoptionHappen = true;
           }
@@ -124,14 +120,12 @@ public class simpleAdoption {
   }
 
   private static Graph externalAdoption(Graph g, double p, int sleepTime) {
-    Yt = Ytadd1;
     for (Node n:g) {
       if (!n.hasAttribute("adopted")) {
         if (Math.random() < p) {
     	  n.setAttribute("adopted");
     	  n.setAttribute("ui.class", "adopted");
 	  sleep(sleepTime);
-    	  Ytadd1++;
     	  extAdoptionCount++;
     	}
       }

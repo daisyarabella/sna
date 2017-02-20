@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
@@ -33,7 +32,6 @@ public class graphProcessor
       FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
       FileWriter regressionAnalysisfw = new FileWriter(regressionAnalysis.getAbsoluteFile());
       timestepfw.write("t,Y(t),External Adopters,Internal Adopters\n");
-      regressionAnalysisfw.write("t,Yt\n");
       
       Graph graph = generateGraph(graphSize, graphGenType, edgeProb, maxLinks);
       graph.display();

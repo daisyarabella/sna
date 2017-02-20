@@ -4,12 +4,15 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.io.IOException;
 
 import org.jfree.chart.ChartFrame;
@@ -146,7 +149,7 @@ public class GUI {
     frame.setVisible(true);
   }
   
-  public static JTextArea makeTimestepDataGUI() {
+public static JTextArea createTimestepDataGUI() {
     chartFrame = new JFrame("Timestep Data");
     chartFrame.setEnabled(false);  
     JPanel panel = new JPanel();
@@ -156,6 +159,20 @@ public class GUI {
     panel.add(textArea); 
     chartFrame.add(textArea);
     textArea.setText("Key:   Y(t) = number of adopted nodes at time t\n"); 
+    chartFrame.show(); 
+    chartFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    return textArea;
+  }
+
+  public static JTextArea createRegressionGUI() {
+    chartFrame = new JFrame("Regression Analysis");
+    chartFrame.setEnabled(false);  
+    JPanel panel = new JPanel();
+    chartFrame.setSize(350,350);    
+    JTextArea textArea = new JTextArea(); 
+    chartFrame.add(panel);
+    panel.add(textArea); 
+    chartFrame.add(textArea);
     chartFrame.show(); 
     chartFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     return textArea;

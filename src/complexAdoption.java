@@ -5,15 +5,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
 
-import org.graphstream.graph.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.Path;
-import org.graphstream.graph.implementations.*;
 
 import javax.swing.JTextArea;
-import javax.swing.JFrame;
 
 public class complexAdoption {
   static int Yt = 0; // Y(t)
@@ -28,7 +24,7 @@ public class complexAdoption {
                             FileWriter timestepfw, FileWriter regressionAnalysisfw,
                             int decrements, int neighborThreshold) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
-    JTextArea textArea = GUI.makeTimestepDataGUI();
+    JTextArea textArea = GUI.createTimestepDataGUI();
 
     int[] totalAdopters = new int[10*graphSize];
     int[] extAdopters = new int[10*graphSize];
@@ -39,6 +35,7 @@ public class complexAdoption {
 
     do {
       adoptionHappen = false;
+      Yt = extAdoptionCount+intAdoptionCount;
       
       totalAdopters[t] = Yt;
       extAdopters[t] = extAdoptionCount;
@@ -94,7 +91,6 @@ public class complexAdoption {
         n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
 	sleep(sleepTime);
-   	Yt++;
    	extAdoptionCount++;
       }
     }
@@ -127,7 +123,6 @@ public class complexAdoption {
     	n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
 	sleep(sleepTime);
-        Yt++;
     	intAdoptionCount++;
       }
     }

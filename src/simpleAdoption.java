@@ -3,17 +3,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.AbstractCollection;
+import java.lang.Math;
 
-import org.graphstream.graph.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.Path;
-import org.graphstream.graph.implementations.*;
 
 import javax.swing.JTextArea;
-import javax.swing.JFrame;
 
 public class simpleAdoption {
   static int Yt = 0; // Y(t)
@@ -26,20 +22,17 @@ public class simpleAdoption {
   public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
-    Yt = 0; // Y(t)
-    intAdoptionCount = 0;
-    extAdoptionCount = 0;
-    t = 0; 
     internalAdoptionHappen = false;
 
     int[] totalAdopters = new int[10*graphSize];
     int[] extAdopters = new int[10*graphSize];
     int[] intAdopters = new int[10*graphSize];
 
-    JTextArea textArea = GUI.makeTimestepDataGUI();    
-
+    JTextArea textArea = GUI.createTimestepDataGUI();   
+    
     do {
-      internalAdoptionHappen = false; 
+      internalAdoptionHappen = false;
+      Yt = extAdoptionCount+intAdoptionCount;
 
       totalAdopters[t] = Yt;
       extAdopters[t] = extAdoptionCount;
@@ -81,7 +74,6 @@ public class simpleAdoption {
         n.setAttribute("adopted");
         n.setAttribute("ui.class", "adopted");
 	sleep(sleepTime);
-   	Yt++;
    	extAdoptionCount++;
       }
     }
@@ -109,7 +101,6 @@ public class simpleAdoption {
     	    neighbor.setAttribute("adopted"); 
     	    neighbor.setAttribute("ui.class", "adopted");
 	    sleep(sleepTime);
-            Yt++;
     	    intAdoptionCount++;
     	    internalAdoptionHappen = true;
           }

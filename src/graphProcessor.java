@@ -16,9 +16,9 @@ import java.awt.Dimension;
 public class graphProcessor
 {
     public static void process(String graphGenType, String adoptionType, String initAdoptionType,
-                           int graphSize, double p, double edgeProb, int maxLinks,
-                           int sleepTime, int decrements, int neighborThreshold,
-                           JFrame frame) throws IOException {
+                           String adoptionThresholdType, int graphSize, double p, double edgeProb, 
+                           int maxLinks, int sleepTime, int decrements, int neighborThreshold,
+                           double neighborThresholdPercent, JFrame frame) throws IOException {
       
       // file to record time step data for plotting simple line graph
       File timestepData = new File("output/timestepData.csv");
@@ -35,8 +35,8 @@ public class graphProcessor
       Thread adoptionThread = new Thread(new Runnable() {
          public void run() {
            try {
-             adoptGraph(graph, adoptionType, initAdoptionType, p, graphSize, sleepTime, 
-                        timestepfw, regressionAnalysisfw, decrements, neighborThreshold);
+             adoptGraph(graph, adoptionType, initAdoptionType, adoptionThresholdType, p, graphSize, sleepTime, 
+                        timestepfw, regressionAnalysisfw, decrements, neighborThreshold, neighborThresholdPercent);
              regression.polyRegression();
            } catch (Exception e) {}
          }
@@ -45,18 +45,20 @@ public class graphProcessor
     }
         
     //method to create adopt graphs
-    private static Graph adoptGraph(Graph g, String adoptionType, String initAdoptionType,
-        	                          double p, int graphSize, int sleepTime, 
+    private static Graph adoptGraph(Graph g, String adoptionType, String initAdoptionType, 
+                                    String adoptionThresholdType, double p, int graphSize, int sleepTime, 
         	                          FileWriter timestepfw, FileWriter regressionAnalysisfw,
-                                          int decrements, int neighborThreshold) throws IOException {       
+                                          int decrements, int neighborThreshold, double neighborThresholdPercent) throws IOException {       
       switch (adoptionType) {
      	  case "Simple": g = simpleAdoption.adopt(g, p, graphSize, initAdoptionType, sleepTime, timestepfw, regressionAnalysisfw);
           break;
      	
-       	  case "Complex": g = complexAdoption.adopt(g, p, graphSize, initAdoptionType, sleepTime, timestepfw, regressionAnalysisfw, decrements, neighborThreshold);
+       	  case "Complex": g = complexAdoption.adopt(g, p, graphSize, initAdoptionType, adoptionThresholdType, 
+                                                    sleepTime, timestepfw, regressionAnalysisfw, decrements, 
+                                                    neighborThreshold, neighborThresholdPercent);
 	  break;
-        }
-        return g;
+      }
+      return g;
     }   	
     
     // method to create initial random graphs 
@@ -69,7 +71,7 @@ public class graphProcessor
       	case "Pref. Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
         	break;
 
-      	case "Bernoulli with Pref. Attachment": g = bernoulliPA.createGraph(g, graphSize);
+      	case "Bernoulli with Pref. Attachment": g = bernoulliPA.createGraph(g, graphSize, edgeProb);
         	break;
         	
         case "Dorogovtsev": g = dorogovtsev.createGraph(g, graphSize);

@@ -41,18 +41,23 @@ public class GUI {
     String[] initAdoptionOptions = {"Random","p Popular Nodes"};
     JComboBox<String> initAdoptionTypeInput = addComboBox(initAdoptionOptions, pane);
 
+    addPanel("Complex adoption - adopt node if: ", pane);
+    String[] adoptionThresholdOptions = {"x neighbors Adopted","Neighbors adopted >= x% total nodes"};
+    JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
+
     JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
+    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.05, pane);
+    JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment maximum links per step: ", 3, pane);
     JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", 0.03, pane);
-    JFormattedTextField edgeProbInput = addDoubleTextField("Edge probability (Bernoulli only): ", 0.05, pane);
-    JFormattedTextField maxLinksInput = addIntTextField("Maximum links (Pref. Attachment only): ", 3, pane);
-    JFormattedTextField decrementsInput = addIntTextField("Decrement p for x steps (Complex only): ", 3, pane);
-    JFormattedTextField neighborThresholdInput = addIntTextField("Adopt node if x neighbors adopted (Complex only): ", 2, pane);
+    JFormattedTextField decrementsInput = addIntTextField("Complex - Decrement p for x steps: ", 3, pane);
+    JFormattedTextField neighborThresholdInput = addIntTextField("Complex Threholding: x neighbors adopted: ", 2, pane);
+    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Complex Thresholding: Neighbors adopted >= x% total nodes: ", 0.2, pane);
     JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", 50, pane);
 
     ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
-                                             graphSizeInput, pInput, edgeProbInput, 
+                                             adoptionThresholdType, graphSizeInput, pInput, edgeProbInput, 
                                              maxLinksInput, sleepTimeInput, 
-                                             decrementsInput, neighborThresholdInput, frame);
+                                             decrementsInput, neighborThresholdInput, neighborThresholdPercentInput, frame);
     
     addButton("Generate and adopt!", pane, al);
   }
@@ -107,27 +112,30 @@ public class GUI {
   
   private static ActionListener createActionListener(JComboBox<String> graphGenTypeInput, 
                               JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
-                              JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
-                              JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
-			      JFormattedTextField sleepTimeInput, JFormattedTextField decrementsInput,
-                              JFormattedTextField neighborThresholdInput, JFrame frame) {
+                              JComboBox<String> adoptionThresholdTypeInput, JFormattedTextField graphSizeInput, 
+                              JFormattedTextField pInput, JFormattedTextField edgeProbInput, 
+                              JFormattedTextField maxLinksInput, JFormattedTextField sleepTimeInput, 
+                              JFormattedTextField decrementsInput, JFormattedTextField neighborThresholdInput, 
+                              JFormattedTextField neighborThresholdPercentInput, JFrame frame) {
     return new ActionListener() {
       public void actionPerformed(ActionEvent e) { 
-        onClick(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput, graphSizeInput, pInput, 
-                edgeProbInput, maxLinksInput, sleepTimeInput, decrementsInput, neighborThresholdInput, frame);
+        onClick(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput, adoptionThresholdTypeInput, graphSizeInput, pInput, 
+                edgeProbInput, maxLinksInput, sleepTimeInput, decrementsInput, neighborThresholdInput, neighborThresholdPercentInput, frame);
       }
     };
   }
 
   private static void onClick(JComboBox<String> graphGenTypeInput, 
                               JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
-                              JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
-                              JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
-			      JFormattedTextField sleepTimeInput, JFormattedTextField decrementsInput,
-                              JFormattedTextField neighborThresholdInput, JFrame frame) {
+                              JComboBox<String> adoptionThresholdTypeInput, JFormattedTextField graphSizeInput, 
+                              JFormattedTextField pInput, JFormattedTextField edgeProbInput, 
+                              JFormattedTextField maxLinksInput, JFormattedTextField sleepTimeInput, 
+                              JFormattedTextField decrementsInput, JFormattedTextField neighborThresholdInput, 
+                              JFormattedTextField neighborThresholdPercentInput, JFrame frame) {
     String graphGenType = (String)graphGenTypeInput.getSelectedItem();
     String adoptionType = (String)adoptionTypeInput.getSelectedItem();
     String initAdoptionType = (String)initAdoptionTypeInput.getSelectedItem();
+    String adoptionThresholdType = (String)adoptionThresholdTypeInput.getSelectedItem();
     int graphSize = (int)graphSizeInput.getValue();
     double p = (double)pInput.getValue(); 
     double edgeProb = (double)edgeProbInput.getValue(); 
@@ -135,10 +143,11 @@ public class GUI {
     int sleepTime = (int)sleepTimeInput.getValue();
     int decrements = (int)decrementsInput.getValue();
     int neighborThreshold = (int)neighborThresholdInput.getValue();
+    double neighborThresholdPercent = (double)neighborThresholdPercentInput.getValue();
     try {
       //frame.getContentPane().remove(graphPanel);
-      graphProcessor.process(graphGenType, adoptionType, initAdoptionType, graphSize, p, edgeProb, 
-                             maxLinks, sleepTime, decrements, neighborThreshold, frame);
+      graphProcessor.process(graphGenType, adoptionType, initAdoptionType, adoptionThresholdType, 
+                             graphSize, p, edgeProb, maxLinks, sleepTime, decrements, neighborThreshold, neighborThresholdPercent, frame);
      
     } catch (IOException error) {
       error.printStackTrace();

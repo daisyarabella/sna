@@ -22,7 +22,7 @@ public class bernoulli {
       for (int otherNodeIndex=newNodeIndex+1; otherNodeIndex<graphSize; otherNodeIndex++) {
         if (Math.random() < edgeProb) {
        	  g.addEdge("Edge"+Integer.toString(edgeID), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
-       		edgeID++;
+          edgeID++;
         }
       }
        return g;

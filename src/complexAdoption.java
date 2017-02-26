@@ -21,9 +21,10 @@ public class complexAdoption {
   static boolean adoptionHappen;
 	
   // go through complex adoption process
-  public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, int sleepTime, 
+  public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, 
+                            String adoptionThresholdType, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw,
-                            int decrements, int neighborThreshold) throws IOException {
+                            int decrements, int neighborThreshold, double neighborThresholdAsPercentage) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
     JTextArea textArea = GUI.createTimestepDataGUI();
 
@@ -33,6 +34,7 @@ public class complexAdoption {
 
     double pDecrementValue = p/decrements;
     double pDecrementer = p;
+    int neighborPercentOfAllNodes = (int) Math.round(neighborThresholdAsPercentage*g.getNodeCount());
 
     do {
       adoptionHappen = false;
@@ -57,10 +59,20 @@ public class complexAdoption {
         if (pDecrementer > 0) {
           g = randomExternalAdoption(g, pDecrementer, sleepTime);
           pDecrementer -= pDecrementValue;
-          g = internalAdoption(g, sleepTime, neighborThreshold);
+          switch (adoptionThresholdType) {
+     	    case "x Neighbors Adopted": g = internalAdoption(g, sleepTime, neighborThreshold);
+            break;
+            case "Node's neighbors >= x% total nodes": g = internalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            break;
+          }
         }
         else {
-          g = internalAdoption(g, sleepTime, neighborThreshold);
+          switch (adoptionThresholdType) {
+     	    case "x Neighbors Adopt": g = internalAdoption(g, sleepTime, neighborThreshold);
+            break;
+            case "Node's neighbors >= x% total nodes": g = internalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            break;
+          }
         }
       }
  
@@ -119,7 +131,7 @@ public class complexAdoption {
   }
    
   // method to make all neighbors of adopted nodes adopted
-  private static Graph internalAdoption(Graph g, int sleepTime, int neighborThreshold) {
+  private static Graph internalAdoption(Graph g, int sleepTime, int threshold) {
     for (Node n:g) {
       int adoptedNeighborCount = 0;
       // if node has adopted, getNeighbors of node
@@ -132,14 +144,13 @@ public class complexAdoption {
     	  if (!neighbors.contains(thisNeighbor)) {
     	    neighbors.add(thisNeighbor);
     	  }
-    	
     	  if (thisNeighbor.hasAttribute("adopted")) {
             adoptedNeighborCount++;
           }
         }
       }
         
-      if (adoptedNeighborCount >= neighborThreshold) {
+      if (adoptedNeighborCount >= threshold) {
         n.setAttribute("adopted"); 
     	n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;

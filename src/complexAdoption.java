@@ -8,6 +8,7 @@ import java.lang.Math;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.algorithm.Toolkit;
 
 import javax.swing.JTextArea;
 
@@ -20,7 +21,7 @@ public class complexAdoption {
   static boolean adoptionHappen;
 	
   // go through complex adoption process
-  public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
+  public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw,
                             int decrements, int neighborThreshold) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
@@ -44,12 +45,17 @@ public class complexAdoption {
       // print timestep data to timestep data GUI
       textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
       if (Yt == 0) {
-        g = externalAdoption(g, pDecrementer, sleepTime);
+        switch (initAdoptionType) {
+     	  case "Random": g = randomExternalAdoption(g, p, sleepTime);
+          break;
+          case "p Popular Nodes": g = popularExternalAdoption(g, p, sleepTime);
+          break;
+        }
         pDecrementer -= pDecrementValue;
       }
       else {
         if (pDecrementer > 0) {
-          g = externalAdoption(g, pDecrementer, sleepTime);
+          g = randomExternalAdoption(g, pDecrementer, sleepTime);
           pDecrementer -= pDecrementValue;
           g = internalAdoption(g, sleepTime, neighborThreshold);
         }
@@ -83,8 +89,8 @@ public class complexAdoption {
     return g;
   }
   
-  // adopt the first few nodes externally
-  public static Graph externalAdoption(Graph g, double p, int sleepTime) {
+  // adopt nodes externally by random
+  public static Graph randomExternalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
       if (Math.random() < p) {
         n.setAttribute("adopted");
@@ -93,6 +99,21 @@ public class complexAdoption {
 	sleep(sleepTime);
    	extAdoptionCount++;
       }
+    }
+    return g;
+  }
+   
+  // adopt nodes externally by popularity
+  public static Graph popularExternalAdoption(Graph g, double p, int sleepTime) {
+    Toolkit tk = new Toolkit();
+    ArrayList<Node> nodesByDescDegree = tk.degreeMap(g);
+    int pPercentOfAllNodes = (int) Math.round(p*g.getNodeCount());
+    for (int i=0; i<pPercentOfAllNodes; i++) {
+      nodesByDescDegree.get(i).setAttribute("adopted");
+      nodesByDescDegree.get(i).setAttribute("ui.class", "adopted");
+      adoptionHappen = true;
+      sleep(sleepTime);
+      extAdoptionCount++;
     }
     return g;
   }

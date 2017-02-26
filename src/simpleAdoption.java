@@ -8,6 +8,7 @@ import java.lang.Math;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.algorithm.Toolkit;
 
 import javax.swing.JTextArea;
 
@@ -19,7 +20,7 @@ public class simpleAdoption {
   static boolean internalAdoptionHappen = false;
 	
   // go through simple adoption process
-  public static Graph adopt(Graph g, double p, int graphSize, int sleepTime, 
+  public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
     internalAdoptionHappen = false;
@@ -42,13 +43,17 @@ public class simpleAdoption {
       textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
 
       if (Yt == 0) {
-        g = initAdoption(g, p, sleepTime);
+        switch (initAdoptionType) {
+     	  case "Random": g = randomExternalAdoption(g, p, sleepTime);
+          break;
+          case "p Popular Nodes": g = popularExternalAdoption(g, p, sleepTime);
+          break;
+        }
       }
       g = internalAdoption(g, p, sleepTime);
       if (!internalAdoptionHappen) {       			
-        g = externalAdoption(g, p, sleepTime);			
+        g = randomExternalAdoption(g, p, sleepTime);			
       }
-
       //exportCSV files
       timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
       regressionAnalysisfw.write(t + "," + Yt+"\n");
@@ -67,15 +72,40 @@ public class simpleAdoption {
       return g;
   }
 
-  // adopt the first few nodes externally
-  public static Graph initAdoption(Graph g, double p, int sleepTime) {
+  // adopt nodes externally by random
+  public static Graph randomExternalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
-      if (Math.random() < p) {
-        n.setAttribute("adopted");
-        n.setAttribute("ui.class", "adopted");
-	sleep(sleepTime);
-   	extAdoptionCount++;
+      if (Yt == 0) {
+        if (Math.random() < p) {
+          n.setAttribute("adopted");
+          n.setAttribute("ui.class", "adopted");
+	  sleep(sleepTime);
+   	  extAdoptionCount++;
+        }
       }
+      else {
+        if (!n.hasAttribute("adopted")) {
+          if (Math.random() < p) {
+    	    n.setAttribute("adopted");
+    	    n.setAttribute("ui.class", "adopted");
+	    sleep(sleepTime);
+    	    extAdoptionCount++;
+    	  }
+        }
+      }
+    }
+    return g;
+  }
+   
+  // adopt nodes externally by popularity
+  public static Graph popularExternalAdoption(Graph g, double p, int sleepTime) {
+    Toolkit tk = new Toolkit();
+    ArrayList<Node> nodesByDescDegree = tk.degreeMap(g);
+    int pPercentOfAllNodes = (int) Math.round(p*g.getNodeCount());
+    for (int i=0; i<pPercentOfAllNodes; i++) {
+      nodesByDescDegree.get(i).setAttribute("ui.class", "adopted");
+      sleep(sleepTime);
+      extAdoptionCount++;
     }
     return g;
   }
@@ -109,20 +139,6 @@ public class simpleAdoption {
     }
     return g;
   }
-
-  private static Graph externalAdoption(Graph g, double p, int sleepTime) {
-    for (Node n:g) {
-      if (!n.hasAttribute("adopted")) {
-        if (Math.random() < p) {
-    	  n.setAttribute("adopted");
-    	  n.setAttribute("ui.class", "adopted");
-	  sleep(sleepTime);
-    	  extAdoptionCount++;
-    	}
-      }
-    }
-    return g;
-  } 
 
   protected static void sleep(int sleepTime) {
     try {

@@ -29,13 +29,17 @@ public class GUI {
     pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
     
     addPanel("Graph generator", pane);
-    String[] generatorOptions = {"Bernoulli","Preferential Attachment", "Dorogovtsev", "Square Grid", "Euclidean"};
-    //String[] generatorOptions = {"Bernoulli","Preferential Attachment"};
+    //String[] generatorOptions = {"Bernoulli","Pref. Attachment", "Bernoulli with Pref. Attachment", "Dorogovtsev", "Square Grid", "Euclidean"};
+    String[] generatorOptions = {"Bernoulli","Pref. Attachment", "Bernoulli with Pref. Attachment"};
     JComboBox<String> graphGenTypeInput = addComboBox(generatorOptions, pane);
 
     addPanel("Adoption type", pane);
     String[] adoptionOptions = {"Simple","Complex"};
     JComboBox<String> adoptionTypeInput = addComboBox(adoptionOptions, pane);
+
+    addPanel("Initial Adoption type", pane);
+    String[] initAdoptionOptions = {"Random","p Popular Nodes"};
+    JComboBox<String> initAdoptionTypeInput = addComboBox(initAdoptionOptions, pane);
 
     JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
     JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", 0.03, pane);
@@ -45,7 +49,7 @@ public class GUI {
     JFormattedTextField neighborThresholdInput = addIntTextField("Adopt node if x neighbors adopted (Complex only): ", 2, pane);
     JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", 50, pane);
 
-    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, 
+    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
                                              graphSizeInput, pInput, edgeProbInput, 
                                              maxLinksInput, sleepTimeInput, 
                                              decrementsInput, neighborThresholdInput, frame);
@@ -102,27 +106,28 @@ public class GUI {
   }
   
   private static ActionListener createActionListener(JComboBox<String> graphGenTypeInput, 
-                              JComboBox<String> adoptionTypeInput, 
+                              JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
                               JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
                               JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
 			      JFormattedTextField sleepTimeInput, JFormattedTextField decrementsInput,
                               JFormattedTextField neighborThresholdInput, JFrame frame) {
     return new ActionListener() {
       public void actionPerformed(ActionEvent e) { 
-        onClick(graphGenTypeInput, adoptionTypeInput, graphSizeInput, pInput, 
+        onClick(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput, graphSizeInput, pInput, 
                 edgeProbInput, maxLinksInput, sleepTimeInput, decrementsInput, neighborThresholdInput, frame);
       }
     };
   }
 
   private static void onClick(JComboBox<String> graphGenTypeInput, 
-                              JComboBox<String> adoptionTypeInput, 
+                              JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
                               JFormattedTextField graphSizeInput, JFormattedTextField pInput, 
                               JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
 			      JFormattedTextField sleepTimeInput, JFormattedTextField decrementsInput,
                               JFormattedTextField neighborThresholdInput, JFrame frame) {
     String graphGenType = (String)graphGenTypeInput.getSelectedItem();
     String adoptionType = (String)adoptionTypeInput.getSelectedItem();
+    String initAdoptionType = (String)initAdoptionTypeInput.getSelectedItem();
     int graphSize = (int)graphSizeInput.getValue();
     double p = (double)pInput.getValue(); 
     double edgeProb = (double)edgeProbInput.getValue(); 
@@ -132,7 +137,7 @@ public class GUI {
     int neighborThreshold = (int)neighborThresholdInput.getValue();
     try {
       //frame.getContentPane().remove(graphPanel);
-      graphProcessor.process(graphGenType, adoptionType, graphSize, p, edgeProb, 
+      graphProcessor.process(graphGenType, adoptionType, initAdoptionType, graphSize, p, edgeProb, 
                              maxLinks, sleepTime, decrements, neighborThreshold, frame);
      
     } catch (IOException error) {

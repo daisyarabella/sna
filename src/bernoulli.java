@@ -17,12 +17,12 @@ public class bernoulli {
       return g;
     }
     
-    static int edgeCount = 1;
+    static int edgeID = 1;
     private static Graph formEdges(Graph g, int newNodeIndex, int graphSize, double edgeProb) {
       for (int otherNodeIndex=newNodeIndex+1; otherNodeIndex<graphSize; otherNodeIndex++) {
         if (Math.random() < edgeProb) {
-       	  g.addEdge("Edge"+Integer.toString(edgeCount), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
-       		edgeCount++;
+       	  g.addEdge("Edge"+Integer.toString(edgeID), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
+       		edgeID++;
         }
       }
        return g;

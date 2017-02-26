@@ -42,7 +42,7 @@ public class GUI {
     JComboBox<String> initAdoptionTypeInput = addComboBox(initAdoptionOptions, pane);
 
     addPanel("Complex adoption - adopt node if: ", pane);
-    String[] adoptionThresholdOptions = {"x neighbors Adopted","Neighbors adopted >= x% total nodes"};
+    String[] adoptionThresholdOptions = {"x neighbors Adopted","No. neighbors adopted >= x% total nodes", "Neighbor degree > average degree distribution"};
     JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
 
     JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);

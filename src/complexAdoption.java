@@ -60,17 +60,21 @@ public class complexAdoption {
           g = randomExternalAdoption(g, pDecrementer, sleepTime);
           pDecrementer -= pDecrementValue;
           switch (adoptionThresholdType) {
-     	    case "x Neighbors Adopted": g = internalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors Adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
-            case "Node's neighbors >= x% total nodes": g = internalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            break;
+            case "Neighbor degree > average degree distribution": g = degreeInternalAdoption(g, sleepTime);
             break;
           }
         }
         else {
           switch (adoptionThresholdType) {
-     	    case "x Neighbors Adopt": g = internalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors Adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
-            case "Node's neighbors >= x% total nodes": g = internalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+            break;
+            case "Neighbor degree > average degree distribution": g = degreeInternalAdoption(g, sleepTime);
             break;
           }
         }
@@ -130,14 +134,14 @@ public class complexAdoption {
     return g;
   }
    
-  // method to make all neighbors of adopted nodes adopted
-  private static Graph internalAdoption(Graph g, int sleepTime, int threshold) {
+  // method to make neighbors of adopted nodes adopted under a threshold
+  private static Graph neighborInternalAdoption(Graph g, int sleepTime, int threshold) {
     for (Node n:g) {
+      Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
+      List<Node> neighbors = new ArrayList<Node>();
       int adoptedNeighborCount = 0;
       // if node has adopted, getNeighbors of node
       if (!n.hasAttribute("adopted")) {
-        Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
-    	List<Node> neighbors = new ArrayList<Node>();
     	while (edgesOfNodeN.hasNext()) {
     	  Edge nextEdge = edgesOfNodeN.next();
     	  Node thisNeighbor = nextEdge.getOpposite(n);
@@ -149,13 +153,42 @@ public class complexAdoption {
           }
         }
       }
-        
       if (adoptedNeighborCount >= threshold) {
         n.setAttribute("adopted"); 
     	n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
 	sleep(sleepTime);
     	intAdoptionCount++;
+      }
+    }
+    return g;
+  }
+
+  // method to make neighbors of adopted nodes adopted if have degree > average of all node degrees
+  private static Graph degreeInternalAdoption(Graph g, int sleepTime) {
+    Toolkit tk = new Toolkit();
+    double averageDegree = tk.averageDegree(g);
+    for (Node n:g) {
+      Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
+      List<Node> neighbors = new ArrayList<Node>();
+      // if node has adopted, getNeighbors of node
+      if (!n.hasAttribute("adopted")) {
+    	while (edgesOfNodeN.hasNext()) {
+    	  Edge nextEdge = edgesOfNodeN.next();
+    	  Node thisNeighbor = nextEdge.getOpposite(n);
+    	  if (!neighbors.contains(thisNeighbor)) {
+    	    neighbors.add(thisNeighbor);
+    	  }
+        }
+      }
+      for (Node neighbor:neighbors) {
+        if (!neighbor.hasAttribute("adopted") && neighbor.getDegree() > averageDegree) {
+          neighbor.setAttribute("adopted"); 
+      	  neighbor.setAttribute("ui.class", "adopted");
+          adoptionHappen = true;
+	  sleep(sleepTime);
+    	  intAdoptionCount++;
+        }
       }
     }
     return g;

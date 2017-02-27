@@ -40,7 +40,7 @@ public class regressionChart extends ApplicationFrame
    private XYDataset createScatterDataset(double[][] YtValues, int maxT)
    {
       XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries scatterPoints = new XYSeries("Data points");
+      XYSeries scatterPoints = new XYSeries("No. adopters at time t");
       for (int t=0; t<maxT; t++) {
         scatterPoints.add(t, YtValues[t][0]);
       }
@@ -53,7 +53,7 @@ public class regressionChart extends ApplicationFrame
       double[] coeff = {c,b,a};
       Function2D poly = new PolynomialFunction2D(coeff);
       XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries polySeries = sampleFunctionOverX(poly,minXAxis,maxXAxis,maxT, "Polynomial");
+      XYSeries polySeries = sampleFunctionOverX(poly,minXAxis,maxXAxis,maxT, "Regression curve");
       dataset.addSeries(polySeries);
       return dataset;
    }

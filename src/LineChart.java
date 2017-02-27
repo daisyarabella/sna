@@ -14,7 +14,7 @@ public class LineChart extends ApplicationFrame
       DefaultCategoryDataset dataset = createDataset(totalAdopters, extAdopters, intAdopters, maxT);
       JFreeChart lineChart = ChartFactory.createLineChart(chartTitle, "Time", "No. of adopters", 
                                                           dataset, PlotOrientation.VERTICAL,
-                                                          true, true, false);
+                                                          true, false, false);
          
       ChartPanel chartPanel = new ChartPanel(lineChart);
       chartPanel.setPreferredSize(new java.awt.Dimension(560, 367));

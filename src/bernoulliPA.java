@@ -8,6 +8,7 @@ public class bernoulliPA {
 
     public static Graph createGraph(Graph g, int graphSize, double bernoulliEdgeProb) {
     	g = addAllNodes(g, graphSize, bernoulliEdgeProb); 
+    	g = addBernoulliEdges(g, graphSize, bernoulliEdgeProb);
     	return g;
     }
     
@@ -37,12 +38,26 @@ public class bernoulliPA {
           double edgeProb = (degreeOfOtherNode/twiceEdgeCount); //as required by Pref. Att. algorithm
           
           if (Math.random() < edgeProb) {
-            g.addEdge("Edge"+Integer.toString(edgeCount), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
+            g.addEdge("Edge"+Integer.toString(edgeID), Integer.toString(newNodeIndex), Integer.toString(otherNodeIndex));
             edgeID++;
             edgeCount++;
           }
         }
       }
        return g;
+    }
+    
+    private static Graph addBernoulliEdges(Graph g, int graphSize, double edgeProb) {
+      for (int firstNodeIndex=0; firstNodeIndex<graphSize; firstNodeIndex++) {
+        for (int otherNodeIndex=firstNodeIndex+1; otherNodeIndex<graphSize; otherNodeIndex++) {
+          Node firstNode = g.getNode(Integer.toString(firstNodeIndex));
+          String otherNode = Integer.toString(otherNodeIndex);
+          if (!firstNode.hasEdgeBetween(otherNode) && Math.random() < edgeProb ) {
+         	  g.addEdge("Edge"+Integer.toString(edgeID), Integer.toString(firstNodeIndex), Integer.toString(otherNodeIndex));
+            edgeID++;
+          }
+        }
+      }
+      return g;
     }
 }

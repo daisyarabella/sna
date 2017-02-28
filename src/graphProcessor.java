@@ -22,7 +22,7 @@ public class graphProcessor
       
       // file to record time step data for plotting simple line graph
       File timestepData = new File("output/timestepData.csv");
-      // file to be read by Python to calculate p and q. Includes S(t+1) data, and coefficients of a, b, c 
+      // file to be read for regression analysis
       File regressionAnalysis = new File("output/regressionAnalysis.csv"); 
       
       FileWriter timestepfw = new FileWriter(timestepData.getAbsoluteFile());
@@ -71,7 +71,7 @@ public class graphProcessor
       	case "Pref. Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
         	break;
 
-      	case "Bernoulli with Pref. Attachment": g = bernoulliPA.createGraph(g, graphSize, edgeProb);
+      	case "Bernoulli with Pref. Attachment": g = bernoulliPA.createGraph(g, graphSize, maxLinks, edgeProb);
         	break;
         	
         case "Dorogovtsev": g = dorogovtsev.createGraph(g, graphSize);

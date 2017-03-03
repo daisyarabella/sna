@@ -79,8 +79,8 @@ public class simpleAdoption {
         if (Math.random() < p) {
           n.setAttribute("adopted");
           n.setAttribute("ui.class", "adopted");
-	  sleep(sleepTime);
-   	  extAdoptionCount++;
+	        sleep(sleepTime);
+   	      extAdoptionCount++;
         }
       }
       else {
@@ -88,7 +88,7 @@ public class simpleAdoption {
           if (Math.random() < p) {
     	    n.setAttribute("adopted");
     	    n.setAttribute("ui.class", "adopted");
-	    sleep(sleepTime);
+	        sleep(sleepTime);
     	    extAdoptionCount++;
     	  }
         }
@@ -103,6 +103,7 @@ public class simpleAdoption {
     ArrayList<Node> nodesByDescDegree = tk.degreeMap(g);
     int pPercentOfAllNodes = (int) Math.round(p*g.getNodeCount());
     for (int i=0; i<pPercentOfAllNodes; i++) {
+      nodesByDescDegree.get(i).setAttribute("adopted");
       nodesByDescDegree.get(i).setAttribute("ui.class", "adopted");
       sleep(sleepTime);
       extAdoptionCount++;

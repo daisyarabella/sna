@@ -68,10 +68,10 @@ public class graphProcessor
       	case "Bernoulli": g = bernoulli.createGraph(g, graphSize, edgeProb);
         	break;
         	
-      	case "Pref. Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
+      	case "Preferential Attachment": g = preferentialAttachment.createGraph(g, graphSize, maxLinks);
         	break;
 
-      	case "Bernoulli with Pref. Attachment": g = bernoulliPA.createGraph(g, graphSize, maxLinks, edgeProb);
+      	case "Preferential Attachment with Bernoulli": g = bernoulliPA.createGraph(g, graphSize, maxLinks, edgeProb);
         	break;
         	
         case "Dorogovtsev": g = dorogovtsev.createGraph(g, graphSize);

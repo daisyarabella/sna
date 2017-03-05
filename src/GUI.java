@@ -28,31 +28,93 @@ public class GUI {
   public static void addComponentsToPane(Container pane, JFrame frame) {         
     pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
     
+    // Graph Generators
     addPanel("Graph generator", pane);
-    //String[] generatorOptions = {"Bernoulli","Pref. Attachment", "Bernoulli with Pref. Attachment", "Dorogovtsev", "Square Grid", "Euclidean"};
-    String[] generatorOptions = {"Bernoulli","Pref. Attachment", "Bernoulli with Pref. Attachment"};
+    String[] generatorOptions = {"Select", "Bernoulli","Preferential Attachment", "Preferential Attachment with Bernoulli"};
     JComboBox<String> graphGenTypeInput = addComboBox(generatorOptions, pane);
+    JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
+    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.05, pane);
+    JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment max. links per step: ", 2, pane);
+    
+    ActionListener graphGenAL = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String option = (String) graphGenTypeInput.getSelectedItem();
+        switch (option) {
+          case "Bernoulli": 
+            updateState(1, edgeProbInput, maxLinksInput, null, null, null, null);
+            break;
+          case "Preferential Attachment": 
+            updateState(2, edgeProbInput, maxLinksInput, null, null, null, null);
+            break;
+          case "Preferential Attachment with Bernoulli":
+            updateState(3, edgeProbInput, maxLinksInput, null, null, null, null);
+            break;
+        }
+      }
+    };
+    graphGenTypeInput.addActionListener(graphGenAL);
 
+    // Adoption Settings
     addPanel("Adoption type", pane);
-    String[] adoptionOptions = {"Simple","Complex"};
+    String[] adoptionOptions = {"Select", "Simple","Complex"};
     JComboBox<String> adoptionTypeInput = addComboBox(adoptionOptions, pane);
 
     addPanel("Initial Adoption type", pane);
-    String[] initAdoptionOptions = {"Random","p Popular Nodes"};
+    String[] initAdoptionOptions = {"Select", "Random", "p Popular Nodes"};
     JComboBox<String> initAdoptionTypeInput = addComboBox(initAdoptionOptions, pane);
 
-    addPanel("Complex adoption - adopt node if: ", pane);
-    String[] adoptionThresholdOptions = {"x neighbors adopted","No. neighbors adopted >= x% total nodes", "Neighbor degree > average degree distribution"};
-    JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
+    JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", 0.03, pane);
 
-    JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", pane);
-    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", pane);
-    JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment maximum links per step: ", pane);
-    JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", pane);
-    JFormattedTextField decrementsInput = addIntTextField("Complex - Decrement p for x steps: ", pane);
-    JFormattedTextField neighborThresholdInput = addIntTextField("Complex Threholding: x neighbors adopted: ", pane);
-    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Complex Thresholding: Neighbors adopted >= x% total nodes: ", pane);
-    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", pane);
+    // Thresholding for Complex Adoption
+    addPanel("Complex adoption settings ", pane);
+    JFormattedTextField decrementsInput = addIntTextField("Decrement p for x steps: ", 2, pane);
+
+    addPanel("Complex adoption - thresholding", pane);
+    String[] adoptionThresholdOptions = {"Select", "x neighbors adopted","No. neighbors adopted >= x% total nodes", "Neighbor degree > average degree distribution"};
+    JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
+    JFormattedTextField neighborThresholdInput = addIntTextField("x neighbors adopted: ", 2, pane);
+    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Neighbors adopted >= x% total nodes: ", 0.2, pane);
+
+
+    ActionListener adoptionTypeAL = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String option = (String) adoptionTypeInput.getSelectedItem();
+        switch (option) {
+          case "Simple": 
+            updateState(4, null, null, decrementsInput, adoptionThresholdType, neighborThresholdInput, neighborThresholdPercentInput);
+            break;
+          case "Complex": 
+            updateState(5, null, null, decrementsInput, adoptionThresholdType, neighborThresholdInput, neighborThresholdPercentInput);
+            break;
+        }
+      }
+    };
+    adoptionTypeInput.addActionListener(adoptionTypeAL);
+
+   
+    ActionListener thresholdAL = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String option = (String) adoptionThresholdType.getSelectedItem();
+        switch (option) {
+          case "x neighbors adopted": 
+            updateState(6, null, null, null, null, neighborThresholdInput, neighborThresholdPercentInput);
+            break;
+          case "No. neighbors adopted >= x% total nodes": 
+            updateState(7, null, null, null, null, neighborThresholdInput, neighborThresholdPercentInput);
+            break;
+          case "Neighbor degree > average degree distribution":
+            updateState(8, null, null, null, null, neighborThresholdInput, neighborThresholdPercentInput);
+            break;
+        }
+      }
+    };
+    adoptionThresholdType.addActionListener(thresholdAL);
+
+
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",1, pane);
 
     ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
                                              adoptionThresholdType, graphSizeInput, pInput, edgeProbInput, 
@@ -76,9 +138,11 @@ public class GUI {
     return comboBox;  
   }
 
-  private static JFormattedTextField addIntTextField(String text, Container container) {
+  private static JFormattedTextField addIntTextField(String text, int defaultValue, Container container) {
     JPanel panel = new JPanel();
     final JFormattedTextField textField = new JFormattedTextField();
+    textField.setHorizontalAlignment(textField.LEFT);
+    textField.setValue(defaultValue);
     textField.setColumns(5);
     JLabel label = new JLabel(text);
     panel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -88,9 +152,11 @@ public class GUI {
     return textField;
   }
 
-  private static JFormattedTextField addDoubleTextField(String text, Container container) {
+  private static JFormattedTextField addDoubleTextField(String text, double defaultValue, Container container) {
     JPanel panel = new JPanel();
     final JFormattedTextField textField = new JFormattedTextField();
+    textField.setHorizontalAlignment(textField.LEFT);
+    textField.setValue(defaultValue);
     textField.setColumns(5);
     JLabel label = new JLabel(text);
     panel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -143,7 +209,6 @@ public class GUI {
     int neighborThreshold = (int)neighborThresholdInput.getValue();
     double neighborThresholdPercent = (double)neighborThresholdPercentInput.getValue();
     try {
-      //frame.getContentPane().remove(graphPanel);
       graphProcessor.process(graphGenType, adoptionType, initAdoptionType, adoptionThresholdType, 
                              graphSize, p, edgeProb, maxLinks, sleepTime, decrements, neighborThreshold, neighborThresholdPercent, frame);
      
@@ -165,7 +230,7 @@ public static JTextArea createTimestepDataGUI() {
     chartFrame = new JFrame("Timestep Data");
     chartFrame.setEnabled(false);  
     JPanel panel = new JPanel();
-    chartFrame.setSize(700,600);    
+    chartFrame.setSize(700,1000);    
     JTextArea textArea = new JTextArea(); 
     chartFrame.add(panel);
     panel.add(textArea); 
@@ -180,7 +245,7 @@ public static JTextArea createTimestepDataGUI() {
     chartFrame = new JFrame("Regression Analysis");
     chartFrame.setEnabled(false);  
     JPanel panel = new JPanel();
-    chartFrame.setSize(350,350);    
+    chartFrame.setSize(320,250);    
     JTextArea textArea = new JTextArea(); 
     chartFrame.add(panel);
     panel.add(textArea); 
@@ -190,13 +255,23 @@ public static JTextArea createTimestepDataGUI() {
     return textArea;
   }
 
-  /*public static JFrame addLineChartToFrame(LineChart lineChart) { 
-    JFrame frame = new JFrame();
-    frame.add(lineChart);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    return frame;
-  }*/
-   
+  
+  public static void updateState(int option, JFormattedTextField edgeProbInput, JFormattedTextField maxLinksInput,
+                                 JFormattedTextField decrementsInput, JComboBox<String> adoptionThresholdType,
+                                 JFormattedTextField neighborThresholdInput, JFormattedTextField neighborThresholdPercentInput) {
+    switch (option) {
+      case 1: edgeProbInput.setEnabled(true); maxLinksInput.setEnabled(false); break;
+      case 2: edgeProbInput.setEnabled(false); maxLinksInput.setEnabled(true); break;
+      case 3: edgeProbInput.setEnabled(true); maxLinksInput.setEnabled(true); break;
+      case 4: decrementsInput.setEnabled(false); adoptionThresholdType.setEnabled(false); 
+              neighborThresholdInput.setEnabled(false); neighborThresholdPercentInput.setEnabled(false); break;
+      case 5: decrementsInput.setEnabled(true); adoptionThresholdType.setEnabled(true); 
+      case 6: neighborThresholdInput.setEnabled(true); neighborThresholdPercentInput.setEnabled(false); break;
+      case 7: neighborThresholdInput.setEnabled(false); neighborThresholdPercentInput.setEnabled(true); break;
+      case 8: neighborThresholdInput.setEnabled(false); neighborThresholdPercentInput.setEnabled(false); break;
+    }
+  } 
+  
   public static void main(String[] args) {
     createAndShowGUI();
   }

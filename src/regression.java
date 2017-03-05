@@ -50,14 +50,16 @@ public class regression {
     Matrix timeTimeTransposeInverse = timeTimeTranspose.inverse();
     Matrix timeTimeTransposeInverseTimeTranspose = timeTimeTransposeInverse.times(timeTranspose);
 
-    textArea.append("Solution matrix for a*x*x + b*x + c [top to bottom]:\n");
+    textArea.append("Solution matrix values: \n");
     Matrix solution = timeTimeTransposeInverseTimeTranspose.times(Yt);
-    double a = solution.get(2,0);
+    double a = solution.get(0,0);
     double b = solution.get(1,0);
-    double c = solution.get(0,0);
+    double c = solution.get(2,0);
     textArea.append("a: "+Double.toString(a)+"\n");
     textArea.append("b: "+Double.toString(b)+"\n");
     textArea.append("c: "+Double.toString(c)+"\n");
+
+    textArea.append("\nCoefficients plot curve of best fit\n"+"represented by a + b*x + c*x*x\n");
 
     textArea.append("\nm = total no. of adopters: " +totalNoAdopters+"\n\n");
 
@@ -65,10 +67,16 @@ public class regression {
     double q = (solution.get(1,0) + p);
     textArea.append("p = a/m: " +p+ "\nq = b+p: " +q+"\n");
 
+    if (0<p && p<1 && 0<q && q<1) {
+      textArea.append("\nFits the Bass Model");
+    } else {
+      textArea.append("\nDoes not fit the Bass Model");
+    }
+
     regressionChart regressionChart = new regressionChart("Plot - polynomial regression", 
                                                           "Polynomial regression", YtValues,
                                                           totalNoAdopters, 
-                                                          time.getRowDimension(), c, b, a);
+                                                          time.getRowDimension(), a, b, c);
     regressionChart.setSize(600,350);
     regressionChart.show();
     } catch (IOException e) {

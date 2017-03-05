@@ -45,14 +45,14 @@ public class GUI {
     String[] adoptionThresholdOptions = {"x neighbors adopted","No. neighbors adopted >= x% total nodes", "Neighbor degree > average degree distribution"};
     JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
 
-    JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
-    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.05, pane);
-    JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment maximum links per step: ", 3, pane);
-    JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", 0.03, pane);
-    JFormattedTextField decrementsInput = addIntTextField("Complex - Decrement p for x steps: ", 3, pane);
-    JFormattedTextField neighborThresholdInput = addIntTextField("Complex Threholding: x neighbors adopted: ", 2, pane);
-    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Complex Thresholding: Neighbors adopted >= x% total nodes: ", 0.2, pane);
-    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", 50, pane);
+    JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", pane);
+    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", pane);
+    JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment maximum links per step: ", pane);
+    JFormattedTextField pInput = addDoubleTextField("Coefficient of innovation (p): ", pane);
+    JFormattedTextField decrementsInput = addIntTextField("Complex - Decrement p for x steps: ", pane);
+    JFormattedTextField neighborThresholdInput = addIntTextField("Complex Threholding: x neighbors adopted: ", pane);
+    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Complex Thresholding: Neighbors adopted >= x% total nodes: ", pane);
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ", pane);
 
     ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
                                              adoptionThresholdType, graphSizeInput, pInput, edgeProbInput, 
@@ -76,10 +76,9 @@ public class GUI {
     return comboBox;  
   }
 
-  private static JFormattedTextField addIntTextField(String text, int defaultValue, Container container) {
+  private static JFormattedTextField addIntTextField(String text, Container container) {
     JPanel panel = new JPanel();
     final JFormattedTextField textField = new JFormattedTextField();
-    textField.setValue(defaultValue);
     textField.setColumns(5);
     JLabel label = new JLabel(text);
     panel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -89,10 +88,9 @@ public class GUI {
     return textField;
   }
 
-  private static JFormattedTextField addDoubleTextField(String text, double defaultValue, Container container) {
+  private static JFormattedTextField addDoubleTextField(String text, Container container) {
     JPanel panel = new JPanel();
     final JFormattedTextField textField = new JFormattedTextField();
-    textField.setValue(defaultValue);
     textField.setColumns(5);
     JLabel label = new JLabel(text);
     panel.setAlignmentX(Component.CENTER_ALIGNMENT);

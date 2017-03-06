@@ -34,6 +34,7 @@ public class complexAdoption {
 
     double pDecrementValue = p/decrements;
     double pDecrementer = p;
+    boolean pDecrementerFinished = false;
     int neighborPercentOfAllNodes = (int) Math.round(neighborThresholdAsPercentage*g.getNodeCount());
 
     do {
@@ -60,7 +61,7 @@ public class complexAdoption {
           g = randomExternalAdoption(g, pDecrementer, sleepTime);
           pDecrementer -= pDecrementValue;
           switch (adoptionThresholdType) {
-     	    case "x neighbors Adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
             case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
             break;
@@ -69,8 +70,9 @@ public class complexAdoption {
           }
         }
         else {
+          pDecrementerFinished = true;
           switch (adoptionThresholdType) {
-     	    case "x neighbors Adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
             case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
             break;
@@ -90,7 +92,7 @@ public class complexAdoption {
       else {
         adoptionNotHappenStreak = 0;
       }
-    } while (adoptionNotHappenStreak < 3);
+    } while (!pDecrementerFinished || adoptionNotHappenStreak<2);
 
     timestepfw.close();
     regressionAnalysisfw.close();
@@ -108,7 +110,7 @@ public class complexAdoption {
   // adopt nodes externally by random
   public static Graph randomExternalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
-      if (Math.random() < p) {
+      if (!n.hasAttribute("adopted") && Math.random() < p) {
         n.setAttribute("adopted");
         n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
@@ -125,11 +127,14 @@ public class complexAdoption {
     ArrayList<Node> nodesByDescDegree = tk.degreeMap(g);
     int pPercentOfAllNodes = (int) Math.round(p*g.getNodeCount());
     for (int i=0; i<pPercentOfAllNodes; i++) {
-      nodesByDescDegree.get(i).setAttribute("adopted");
-      nodesByDescDegree.get(i).setAttribute("ui.class", "adopted");
-      adoptionHappen = true;
-      sleep(sleepTime);
-      extAdoptionCount++;
+      Node nextNode = nodesByDescDegree.get(i);
+      if (!nextNode.hasAttribute("adopted")) {
+        nextNode.setAttribute("adopted");
+        nextNode.setAttribute("ui.class", "adopted");
+        adoptionHappen = true;
+        sleep(sleepTime);
+        extAdoptionCount++;
+      }
     }
     return g;
   }
@@ -153,7 +158,7 @@ public class complexAdoption {
           }
         }
       }
-      if (adoptedNeighborCount >= threshold) {
+      if (adoptedNeighborCount >= threshold && !n.hasAttribute("adopted")) {
         n.setAttribute("adopted"); 
     	n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
@@ -182,7 +187,7 @@ public class complexAdoption {
         }
       }
       for (Node neighbor:neighbors) {
-        if (!neighbor.hasAttribute("adopted") && neighbor.getDegree() > averageDegree) {
+        if (!neighbor.hasAttribute("adopted") && neighbor.getDegree()>averageDegree) {
           neighbor.setAttribute("adopted"); 
       	  neighbor.setAttribute("ui.class", "adopted");
           adoptionHappen = true;

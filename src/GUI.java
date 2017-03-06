@@ -33,7 +33,7 @@ public class GUI {
     String[] generatorOptions = {"Select", "Bernoulli","Preferential Attachment", "Preferential Attachment with Bernoulli"};
     JComboBox<String> graphGenTypeInput = addComboBox(generatorOptions, pane);
     JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
-    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.05, pane);
+    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.01, pane);
     JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment max. links per step: ", 2, pane);
     
     ActionListener graphGenAL = new ActionListener() {
@@ -68,13 +68,13 @@ public class GUI {
 
     // Thresholding for Complex Adoption
     addPanel("Complex adoption settings ", pane);
-    JFormattedTextField decrementsInput = addIntTextField("Decrement p for x steps: ", 2, pane);
+    JFormattedTextField decrementsInput = addIntTextField("Decrement p for x steps: ", 150, pane);
 
     addPanel("Complex adoption - thresholding", pane);
     String[] adoptionThresholdOptions = {"Select", "x neighbors adopted","No. neighbors adopted >= x% total nodes", "Neighbor degree > average degree distribution"};
     JComboBox<String> adoptionThresholdType = addComboBox(adoptionThresholdOptions, pane);
     JFormattedTextField neighborThresholdInput = addIntTextField("x neighbors adopted: ", 2, pane);
-    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Neighbors adopted >= x% total nodes: ", 0.2, pane);
+    JFormattedTextField neighborThresholdPercentInput = addDoubleTextField("Neighbors adopted >= x% total nodes: ", 0.02, pane);
 
 
     ActionListener adoptionTypeAL = new ActionListener() {

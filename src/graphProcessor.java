@@ -57,6 +57,7 @@ public class graphProcessor
                                                     sleepTime, timestepfw, regressionAnalysisfw, decrements, 
                                                     neighborThreshold, neighborThresholdPercent);
 	  break;
+          default: g = simpleAdoption.adopt(g, p, graphSize, initAdoptionType, sleepTime, timestepfw, regressionAnalysisfw);
       }
       return g;
     }   	
@@ -83,9 +84,9 @@ public class graphProcessor
         case "Euclidean": g = euclidean.createGraph(g, graphSize);
         	break;
 		
-		    default: g = bernoulli.createGraph(g, graphSize, edgeProb);
-        }
-        return g;
+	default: g = bernoulli.createGraph(g, graphSize, edgeProb);
+      }
+      return g;
     }  
 
 }

@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.io.FileReader;
 import java.util.Scanner;
 import java.io.IOException;
+import java.lang.Math;
 
 import javax.swing.JTextArea;
 
@@ -55,24 +56,35 @@ public class regression {
     double a = solution.get(0,0);
     double b = solution.get(1,0);
     double c = solution.get(2,0);
-    textArea.append("a: "+Double.toString(a)+"\n");
-    textArea.append("b: "+Double.toString(b)+"\n");
-    textArea.append("c: "+Double.toString(c)+"\n");
+    textArea.append("a = "+Double.toString(a)+"\n");
+    textArea.append("b = "+Double.toString(b)+"\n");
+    textArea.append("c = "+Double.toString(c)+"\n");
 
     textArea.append("\nCoefficients plot curve of best fit\n"+"represented by a + b*x + c*x*x\n");
-
-    textArea.append("\nm = total no. of adopters: " +totalNoAdopters+"\n\n");
-
-    double p = solution.get(0,0)/totalNoAdopters;
-    double q = (solution.get(1,0) + p);
-    textArea.append("p = a/m: " +p+ "\nq = b+p: " +q+"\n");
-
-    if (0<p && p<1 && 0<q && q<1) {
-      textArea.append("\nFits the Bass Model");
-    } else {
+ 
+    double bsqminus4ac = ((b*b)-(4*a*c));
+    if (bsqminus4ac < 0) {
+      textArea.append("Solution is a complex number; cannot solve");
       textArea.append("\nDoes not fit the Bass Model");
     }
+    else {
+      double sqrtTerm = Math.sqrt(bsqminus4ac);
+      double m = (-b-sqrtTerm)/(2*c);
+      textArea.append("m = " +m+"\n\n");
 
+      //textArea.append("\nm = total no. of adopters: " +totalNoAdopters+"\n\n");
+
+      double p = solution.get(0,0)/m;
+      double q = (solution.get(1,0) + p);
+      textArea.append("p = a/m: " +p+ "\nq = b+p: " +q+"\n");
+      System.out.println(p+ "\n" +q);
+
+      if (0<p && p<1 && 0<q && q<1) {
+        textArea.append("\nFits the Bass Model");
+      } else {
+        textArea.append("\nDoes not fit the Bass Model");
+      }
+    }
     regressionChart regressionChart = new regressionChart("Plot - polynomial regression", 
                                                           "Polynomial regression", YtValues,
                                                           totalNoAdopters, 

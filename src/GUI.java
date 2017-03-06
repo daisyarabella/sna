@@ -114,7 +114,7 @@ public class GUI {
     adoptionThresholdType.addActionListener(thresholdAL);
 
 
-    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",1, pane);
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",75, pane);
 
     ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
                                              adoptionThresholdType, graphSizeInput, pInput, edgeProbInput, 

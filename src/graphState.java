@@ -1,4 +1,4 @@
-public class graphState extends Object {
+/*public class graphState extends Object {
 	
  	private int Yt;
 	private int Ytadd1;
@@ -87,4 +87,4 @@ public class graphState extends Object {
  	public boolean getIntAdoptionHappen() {
  		return internalAdoptionHappen;
  	}
-} 	
+} 	*/

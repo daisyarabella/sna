@@ -1,4 +1,4 @@
-public class timestepData {
+/*public class timestepData {
 	private int t;
 	private int Yt;
 	private int Yt1;
@@ -12,4 +12,4 @@ public class timestepData {
 		this.totalPAdopters = totalPAdopters;
 		this.totalQAdopters = totalQAdopters;
 	}
-}
+}*/

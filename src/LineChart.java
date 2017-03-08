@@ -8,6 +8,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 public class LineChart extends ApplicationFrame
 {
+   // Create a LineChart which displays the timestep data; number of adopters vs time
    public LineChart(String applicationTitle, String chartTitle, int[] totalAdopters, int[] extAdopters, int[] intAdopters, int maxT)
    {
       super(applicationTitle);
@@ -21,6 +22,7 @@ public class LineChart extends ApplicationFrame
       setContentPane(chartPanel);
    }
 
+   // Parse generated data into a form that JFreeChart methods require to create charts
    private DefaultCategoryDataset createDataset(int[] totalAdopters, int[] extAdopters, int[] intAdopters, int maxT)
    {
       DefaultCategoryDataset dataset = new DefaultCategoryDataset();

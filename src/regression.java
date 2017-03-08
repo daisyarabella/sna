@@ -71,9 +71,7 @@ public class regression {
       double sqrtTerm = Math.sqrt(bsqminus4ac);
       double m = (-b-sqrtTerm)/(2*c);
       textArea.append("m = " +m+"\n\n");
-
-      //textArea.append("\nm = total no. of adopters: " +totalNoAdopters+"\n\n");
-
+      
       double p = solution.get(0,0)/m;
       double q = (solution.get(1,0) + p);
       textArea.append("p = a/m: " +p+ "\nq = b+p: " +q+"\n");

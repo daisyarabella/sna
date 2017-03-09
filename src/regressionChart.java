@@ -12,21 +12,21 @@ import org.jfree.chart.axis.NumberAxis;
 
 public class regressionChart extends ApplicationFrame
 {
-   public regressionChart(String applicationTitle, String chartTitle, double[][] YtValues, double totalNoAdopters, int maxT, double c, double b, double a)
+   public regressionChart(String applicationTitle, String chartTitle, double[][] YtValues, double[][] SValues, int graphSize, double c, double b, double a)
    {
       super(applicationTitle);
       XYPlot plot = new XYPlot();
 
-      XYDataset scatterDataset = createScatterDataset(YtValues, maxT);
+      XYDataset scatterDataset = createScatterDataset(YtValues, SValues, graphSize);
 
       plot.setDataset(0, scatterDataset);
       plot.setRenderer(0, new XYLineAndShapeRenderer(false, true));
-      plot.setDomainAxis(0, new NumberAxis("Time"));
-      plot.setRangeAxis(0, new NumberAxis("No. of adopters"));
+      plot.setDomainAxis(0, new NumberAxis("Total no. of adopters, Y(t)"));
+      plot.setRangeAxis(0, new NumberAxis("S(t+1)"));
 
       double minXAxis = 0;
-      double maxXAxis = maxT;
-      XYDataset regressionDataset = createRegressionDataset(c,b,a,minXAxis,maxXAxis,maxT);
+      double maxXAxis = graphSize;
+      XYDataset regressionDataset = createRegressionDataset(c,b,a,minXAxis,maxXAxis,graphSize);
       plot.setDataset(1, regressionDataset);
       plot.setRenderer(1, new XYLineAndShapeRenderer(true, false));
 
@@ -37,32 +37,32 @@ public class regressionChart extends ApplicationFrame
       setContentPane(chartPanel);
    }
 
-   private XYDataset createScatterDataset(double[][] YtValues, int maxT)
+   private XYDataset createScatterDataset(double[][] YtValues, double[][] SValues, int graphSize)
    {
       XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries scatterPoints = new XYSeries("No. adopters at time t");
-      for (int t=0; t<maxT; t++) {
-        scatterPoints.add(t, YtValues[t][0]);
+      XYSeries scatterPoints = new XYSeries("xx");
+      for (int t=0; t<graphSize; t++) {
+        scatterPoints.add(YtValues[t][0], SValues[t][0]);
       }
       dataset.addSeries(scatterPoints);
       return dataset;
    }
 
-   private XYDataset createRegressionDataset(double c, double b, double a, double minXAxis, double maxXAxis, int maxT)
+   private XYDataset createRegressionDataset(double c, double b, double a, double minXAxis, double maxXAxis, int graphSize)
    {
       double[] coeff = {c,b,a};
       Function2D poly = new PolynomialFunction2D(coeff);
       XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries polySeries = sampleFunctionOverX(poly,minXAxis,maxXAxis,maxT, "Regression curve");
+      XYSeries polySeries = sampleFunctionOverX(poly,minXAxis,maxXAxis,graphSize, "Regression curve");
       dataset.addSeries(polySeries);
       return dataset;
    }
 
-   public static XYSeries sampleFunctionOverX(Function2D poly, double minXAxis,double maxXAxis,int maxT, Comparable<?> seriesKey)
+   public static XYSeries sampleFunctionOverX(Function2D poly, double minXAxis,double maxXAxis,int graphSize, Comparable<?> seriesKey)
    {
      XYSeries series = new XYSeries(seriesKey, false);
-     double step = (maxXAxis-minXAxis)/(maxT-1);
-     for (int i=0;i<maxT;i++) {
+     double step = (maxXAxis-minXAxis)/(graphSize-1);
+     for (int i=0;i<graphSize;i++) {
        double x = minXAxis + step * i;
        series.add(x, poly.getValue(x));
      }

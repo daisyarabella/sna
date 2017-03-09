@@ -143,7 +143,7 @@ public class GUI {
     adoptionThresholdType.addActionListener(thresholdAL);
 
     // Alters the speed at which the graph displays the dynamic adoption process. 0 is fast, 100000 is slow
-    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",200, pane);
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",35, pane);
 
     // Create action listener for when all options have been selected; generate graph and adopt it
     ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
@@ -289,7 +289,7 @@ public class GUI {
     chartFrame = new JFrame("Regression Analysis");
     chartFrame.setEnabled(false);  
     JPanel panel = new JPanel();
-    chartFrame.setSize(320,250);    
+    chartFrame.setSize(320,450);    
     JTextArea textArea = new JTextArea(); 
     chartFrame.add(panel);
     panel.add(textArea); 

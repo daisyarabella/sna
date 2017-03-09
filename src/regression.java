@@ -1,10 +1,9 @@
-import Jama.Matrix;
+/*import Jama.Matrix;
 
 import com.opencsv.CSVReader;
 
 import java.text.NumberFormat;
 import java.io.FileReader;
-import java.util.Scanner;
 import java.io.IOException;
 import java.lang.Math;
 
@@ -93,4 +92,4 @@ public class regression {
       e.printStackTrace();
     } 
   }
-}
+}*/

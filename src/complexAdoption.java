@@ -93,7 +93,7 @@ public class complexAdoption {
  
       //exportCSV files
       timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
-      regressionAnalysisfw.write(t + "," + Yt+"\n");      
+      regressionAnalysisfw.write(Yt+"\n");      
       t++;
       if (!adoptionHappen) {
         adoptionNotHappenStreak++;

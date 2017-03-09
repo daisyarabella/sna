@@ -71,7 +71,7 @@ public class simpleAdoption {
       
       // Export CSV files
       timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
-      regressionAnalysisfw.write(t + "," + Yt+"\n");
+      regressionAnalysisfw.write(Yt+"\n");
       t++;
       } while (Yt < graphSize); // Only terminate adoption process when every node has been adopted
       

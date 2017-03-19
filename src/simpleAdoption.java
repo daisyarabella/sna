@@ -63,6 +63,12 @@ public class simpleAdoption {
       
       // If this isn't initial adoption, do internal adoption
       g = internalAdoption(g, p, sleepTime);
+
+      for (Node n:g) {
+        if (n.hasAttribute("just_adopted")) {
+          n.removeAttribute("just_adopted");
+        }
+      }
       
       // Do external adoption if internal adoption didn't happen to ensure process runs until every node in graph is adopted
       if (!internalAdoptionHappen) {       			
@@ -105,8 +111,9 @@ public class simpleAdoption {
         if (!n.hasAttribute("adopted")) {
           if (Math.random() < p) {
     	    n.setAttribute("adopted");
+            n.setAttribute("just_adopted");
     	    n.setAttribute("ui.class", "adopted");
-	        sleep(sleepTime);
+	    sleep(sleepTime);
     	    extAdoptionCount++;
     	  }
         }
@@ -137,9 +144,9 @@ public class simpleAdoption {
   private static Graph internalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
       // If node is adopted, getNeighbors of node
-      if (!n.hasAttribute("adopted")) {
+      if (n.hasAttribute("adopted") & !n.hasAttribute("just_adopted")) {
         Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
-    	  List<Node> neighbors = new ArrayList<Node>();
+    	List<Node> neighbors = new ArrayList<Node>();
     	while (edgesOfNodeN.hasNext()) {
     	  Edge nextEdge = edgesOfNodeN.next();
     	  Node thisNeighbor = nextEdge.getOpposite(n);
@@ -148,13 +155,14 @@ public class simpleAdoption {
     	  }
     	}
     	
-      // Adopt neighbors of the node
+        // Adopt neighbors of the node
     	for (Node neighbor : neighbors) {
     	  // Ensure not adopting some nodes twice
     	  if (!neighbor.hasAttribute("adopted")) {
     	    neighbor.setAttribute("adopted"); 
+            neighbor.setAttribute("just_adopted"); 
     	    neighbor.setAttribute("ui.class", "adopted");
-          sleep(sleepTime);
+            sleep(sleepTime);
     	    intAdoptionCount++;
     	    internalAdoptionHappen = true;
           }

@@ -12,7 +12,7 @@ import org.jfree.chart.axis.NumberAxis;
 
 public class regressionChart extends ApplicationFrame
 {
-   public regressionChart(String applicationTitle, String chartTitle, double[][] YtValues, double[][] SValues, int graphSize, double c, double b, double a)
+   public regressionChart(String applicationTitle, String chartTitle, double[][] YtValues, double[][] SValues, int graphSize, double a, double b, double c)
    {
       super(applicationTitle);
       XYPlot plot = new XYPlot();
@@ -26,7 +26,7 @@ public class regressionChart extends ApplicationFrame
 
       double minXAxis = 0;
       double maxXAxis = graphSize;
-      XYDataset regressionDataset = createRegressionDataset(c,b,a,minXAxis,maxXAxis,graphSize);
+      XYDataset regressionDataset = createRegressionDataset(a,b,c,minXAxis,maxXAxis,graphSize);
       plot.setDataset(1, regressionDataset);
       plot.setRenderer(1, new XYLineAndShapeRenderer(true, false));
 
@@ -40,7 +40,7 @@ public class regressionChart extends ApplicationFrame
    private XYDataset createScatterDataset(double[][] YtValues, double[][] SValues, int graphSize)
    {
       XYSeriesCollection dataset = new XYSeriesCollection();
-      XYSeries scatterPoints = new XYSeries("xx");
+      XYSeries scatterPoints = new XYSeries("Yt vs S(t+1)");
       for (int t=0; t<graphSize; t++) {
         scatterPoints.add(YtValues[t][0], SValues[t][0]);
       }
@@ -48,9 +48,9 @@ public class regressionChart extends ApplicationFrame
       return dataset;
    }
 
-   private XYDataset createRegressionDataset(double c, double b, double a, double minXAxis, double maxXAxis, int graphSize)
+   private XYDataset createRegressionDataset(double a, double b, double c, double minXAxis, double maxXAxis, int graphSize)
    {
-      double[] coeff = {c,b,a};
+      double[] coeff = {a,b,c};
       Function2D poly = new PolynomialFunction2D(coeff);
       XYSeriesCollection dataset = new XYSeriesCollection();
       XYSeries polySeries = sampleFunctionOverX(poly,minXAxis,maxXAxis,graphSize, "Regression curve");

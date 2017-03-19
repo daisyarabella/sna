@@ -90,6 +90,12 @@ public class complexAdoption {
           }
         }
       }
+
+      for (Node n:g) {
+        if (n.hasAttribute("just_adopted")) {
+          n.removeAttribute("just_adopted");
+        }
+      }
  
       //exportCSV files
       timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
@@ -122,10 +128,11 @@ public class complexAdoption {
       // If random adoption has been selected as initial adoption type
       if (!n.hasAttribute("adopted") && Math.random() < p) {
         n.setAttribute("adopted");
+        //n.setAttribute("just_adopted"); 
         n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
-	      sleep(sleepTime);
-   	    extAdoptionCount++;
+	sleep(sleepTime);
+   	extAdoptionCount++;
       }
     }
     return g;
@@ -145,6 +152,7 @@ public class complexAdoption {
       if (!nextNode.hasAttribute("adopted")) {
         nextNode.setAttribute("adopted");
         nextNode.setAttribute("ui.class", "adopted");
+        //nextNode.setAttribute("just_adopted"); 
         adoptionHappen = true;
         sleep(sleepTime);
         extAdoptionCount++;
@@ -160,7 +168,7 @@ public class complexAdoption {
       List<Node> neighbors = new ArrayList<Node>();
       int adoptedNeighborCount = 0;
       
-      // If node is adopted, getNeighbors of node
+      // If node is not adopted, getNeighbors of node
       if (!n.hasAttribute("adopted")) {
     	while (edgesOfNodeN.hasNext()) {
     	  Edge nextEdge = edgesOfNodeN.next();
@@ -178,10 +186,11 @@ public class complexAdoption {
       // If a node's number of adopted neighbors exceeds threshold and isn't already adopted, adopt the node
       if (adoptedNeighborCount >= threshold && !n.hasAttribute("adopted")) {
         n.setAttribute("adopted"); 
-    	  n.setAttribute("ui.class", "adopted");
+    	n.setAttribute("ui.class", "adopted");
+        n.setAttribute("just_adopted"); 
         adoptionHappen = true;
-	      sleep(sleepTime);
-    	  intAdoptionCount++;
+	sleep(sleepTime);
+    	intAdoptionCount++;
       }
     }
     return g;
@@ -196,7 +205,7 @@ public class complexAdoption {
       List<Node> neighbors = new ArrayList<Node>();
       
       // If node is adopted, getNeighbors of node
-      if (n.hasAttribute("adopted")) {
+      if (n.hasAttribute("adopted") && !n.hasAttribute("just_adopted")) {
     	  while (edgesOfNodeN.hasNext()) {
     	    Edge nextEdge = edgesOfNodeN.next();
     	    Node thisNeighbor = nextEdge.getOpposite(n);
@@ -212,9 +221,10 @@ public class complexAdoption {
         if (!neighbor.hasAttribute("adopted") && neighbor.getDegree()>averageDegree) {
           neighbor.setAttribute("adopted"); 
       	  neighbor.setAttribute("ui.class", "adopted");
+          neighbor.setAttribute("just_adopted"); 
           adoptionHappen = true;
-	        sleep(sleepTime);
-    	    intAdoptionCount++;
+	  sleep(sleepTime);
+    	  intAdoptionCount++;
         }
       }
     }

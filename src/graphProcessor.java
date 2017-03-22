@@ -41,7 +41,7 @@ public class graphProcessor
            try {
              adoptGraph(graph, adoptionType, initAdoptionType, adoptionThresholdType, p, graphSize, sleepTime, 
                         timestepfw, regressionAnalysisfw, decrements, neighborThreshold, neighborThresholdPercent);
-             regression2.polyRegression(graphSize);
+             regression.polyRegression();
            } catch (Exception e) {}
          }
       });  

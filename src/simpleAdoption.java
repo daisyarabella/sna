@@ -12,6 +12,7 @@ import org.graphstream.algorithm.Toolkit;
 
 import javax.swing.JTextArea;
 
+// Simple adoption process
 public class simpleAdoption {
   static int Yt = 0; // Y(t)
   static int intAdoptionCount = 0;
@@ -19,7 +20,7 @@ public class simpleAdoption {
   static int t = 0; 
   static boolean internalAdoptionHappen = false;
 	
-  // go through simple adoption process
+	// Method to adopt the graph
   public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
@@ -45,7 +46,9 @@ public class simpleAdoption {
       intAdopters[t] = intAdoptionCount;
 
       // Print timestep data to timestep data GUI
-      textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
+      textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " 
+                      +extAdoptionCount+ "\t No. Internal Adoptions: " 
+                      +intAdoptionCount +"\n");
 
       // Choose between initial adoption types 
       if (Yt == 0) {
@@ -55,28 +58,31 @@ public class simpleAdoption {
         
         case "p Popular Nodes": g = popularExternalAdoption(g, p, sleepTime);
           break;
-          
+        
+        // Choose default as popular nodes - this is more likely to happen in real life  
         default: g = popularExternalAdoption(g, p, sleepTime);
           break;
         }
       }
       
-      // If this isn't initial adoption, do internal adoption
+      // If we are not implementing initial adoption, do internal adoption
       g = internalAdoption(g, p, sleepTime);
 
+      // Reset all nodes which have just been adopted for each iteration
       for (Node n:g) {
         if (n.hasAttribute("just_adopted")) {
           n.removeAttribute("just_adopted");
         }
       }
       
-      // Do external adoption if internal adoption didn't happen to ensure process runs until every node in graph is adopted
+      // Do external adoption if internal adoption didn't happen
+      // to ensure process runs until all nodes adopted
       if (!internalAdoptionHappen) {       			
         g = randomExternalAdoption(g, p, sleepTime);			
       }
       
-      // Export CSV files
-      timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
+      // Export timestep data and regression data CSV files
+      timestepfw.write(t + "," +Yt+ "," +extAdoptionCount+ "," +intAdoptionCount+ "\n");
       regressionAnalysisfw.write(Yt+"\n");
       t++;
       } while (Yt < graphSize); // Only terminate adoption process when every node has been adopted
@@ -107,13 +113,14 @@ public class simpleAdoption {
         }
       }
       // To run if internal adoption has not occurred
+      // Adopts p amount of remaining non-adopted nodes
       else {
         if (!n.hasAttribute("adopted")) {
           if (Math.random() < p) {
     	    n.setAttribute("adopted");
-            n.setAttribute("just_adopted");
+          n.setAttribute("just_adopted");
     	    n.setAttribute("ui.class", "adopted");
-	    sleep(sleepTime);
+	        sleep(sleepTime);
     	    extAdoptionCount++;
     	  }
         }
@@ -122,7 +129,7 @@ public class simpleAdoption {
     return g;
   }
    
-  // Adopt a set percentage of most popular nodes externally 
+  // Adopt a p% most popular nodes externally 
   public static Graph popularExternalAdoption(Graph g, double p, int sleepTime) {
     Toolkit tk = new Toolkit();
     
@@ -143,7 +150,7 @@ public class simpleAdoption {
   // Adopt ALL neighbours of adopted nodes
   private static Graph internalAdoption(Graph g, double p, int sleepTime) {
     for (Node n:g) {
-      // If node is adopted, getNeighbors of node
+      // If node is adopted and wasn't adopted this iteration, getNeighbors of node
       if (n.hasAttribute("adopted") & !n.hasAttribute("just_adopted")) {
         Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
     	List<Node> neighbors = new ArrayList<Node>();
@@ -155,14 +162,14 @@ public class simpleAdoption {
     	  }
     	}
     	
-        // Adopt neighbors of the node
+        // Adopt all neighbors of the node
     	for (Node neighbor : neighbors) {
     	  // Ensure not adopting some nodes twice
     	  if (!neighbor.hasAttribute("adopted")) {
     	    neighbor.setAttribute("adopted"); 
-            neighbor.setAttribute("just_adopted"); 
+          neighbor.setAttribute("just_adopted"); 
     	    neighbor.setAttribute("ui.class", "adopted");
-            sleep(sleepTime);
+          sleep(sleepTime);
     	    intAdoptionCount++;
     	    internalAdoptionHappen = true;
           }

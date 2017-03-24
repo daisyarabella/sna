@@ -1,13 +1,15 @@
+// File to read real data and draw and display the graph it represents
+// Not used in final project as did not have as not much real product diffusion data
+// with network data is readily available
+
 import com.opencsv.CSVReader;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.Viewer;
-
 
 public class readFile {
   static int graphSize = 0;
@@ -22,8 +24,8 @@ public class readFile {
     CSVReader lineCounter = null;
     
     try {
-      dataReader = new CSVReader(new FileReader("../output/data/modMath.csv"),',', '\'', 1);
-      lineCounter = new CSVReader(new FileReader("../output/data/modMath.csv"));
+      dataReader = new CSVReader(new FileReader("../output/data/realData.csv"),',', '\'', 1);
+      lineCounter = new CSVReader(new FileReader("../output/data/realData.csv"));
       String[] nextLine;
       
       while ((nextLine = lineCounter.readNext()) != null) {
@@ -57,8 +59,6 @@ public class readFile {
   private static Graph addNodes(Graph g, int graphSize) {
     for (int newNodeIndex=1; newNodeIndex<=graphSize; newNodeIndex++) {
       Node n = g.addNode(Integer.toString(newNodeIndex));
-      n.addAttribute("ID", Integer.toString(newNodeIndex));
-      n.addAttribute("ui.stylesheet", "text-mode:normal;text-background-mode: plain;");
     }  
     return g;
   }
@@ -78,5 +78,3 @@ public class readFile {
     Viewer viewer = graph.display();
   }
 }
-
-

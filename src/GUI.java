@@ -4,22 +4,19 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
 import java.io.IOException;
 
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.*;
 
-//import org.graphstream.ui.swingViewer.Viewer;
- 
+// Initial GUI
 public class GUI {
   public static boolean RIGHT_TO_LEFT = false;
   public static JFrame chartFrame;
@@ -36,7 +33,7 @@ public class GUI {
     JFormattedTextField graphSizeInput = addIntTextField("Graph size: ", 100, pane);
     
     // Probability an edge will be formed between any two nodes for Bernoulli generation
-    JFormattedTextField edgeProbInput = addDoubleTextField("Berboulli edge probability: ", 0.01, pane);
+    JFormattedTextField edgeProbInput = addDoubleTextField("Bernoulli edge probability: ", 0.02, pane);
     
     // Maximum number of edges a node being created in a Preferential Attachment graph will make at it's time of being added
     JFormattedTextField maxLinksInput = addIntTextField("Pref. Attachment max. links per step: ", 2, pane);
@@ -143,14 +140,21 @@ public class GUI {
     adoptionThresholdType.addActionListener(thresholdAL);
 
     // Alters the speed at which the graph displays the dynamic adoption process. 0 is fast, 100000 is slow
-    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",1, pane);
-
-    // Create action listener for when all options have been selected; generate graph and adopt it
-    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput,
-                                             adoptionThresholdType, graphSizeInput, pInput, edgeProbInput, 
-                                             maxLinksInput, sleepTimeInput, 
-                                             decrementsInput, neighborThresholdInput, neighborThresholdPercentInput, frame);
+    JFormattedTextField sleepTimeInput = addIntTextField("Sleep time: ",100, pane);
     
+    // Option whether want to see regression chart
+    JCheckBox regressionCB = new JCheckBox("Show regression chart?");
+    regressionCB.setHorizontalAlignment(regressionCB.LEFT);
+    pane.add(regressionCB);
+    
+    // Create action listener for when all options have been selected; generate graph and adopt it
+    ActionListener al = createActionListener(graphGenTypeInput, adoptionTypeInput, 
+                                             initAdoptionTypeInput, adoptionThresholdType, 
+                                             graphSizeInput, pInput, edgeProbInput, 
+                                             maxLinksInput, sleepTimeInput, 
+                                             decrementsInput, neighborThresholdInput, 
+                                             neighborThresholdPercentInput, regressionCB, frame);                                             
+                                             
     // Add 'Go' button at bottom of GUI
     addButton("Generate and adopt!", pane, al);
   }
@@ -212,28 +216,44 @@ public class GUI {
   
   // Create the action listener for the 'Go' button
   private static ActionListener createActionListener(JComboBox<String> graphGenTypeInput, 
-                              JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
-                              JComboBox<String> adoptionThresholdTypeInput, JFormattedTextField graphSizeInput, 
-                              JFormattedTextField pInput, JFormattedTextField edgeProbInput, 
-                              JFormattedTextField maxLinksInput, JFormattedTextField sleepTimeInput, 
-                              JFormattedTextField decrementsInput, JFormattedTextField neighborThresholdInput, 
-                              JFormattedTextField neighborThresholdPercentInput, JFrame frame) {
+                              JComboBox<String> adoptionTypeInput, 
+                              JComboBox<String> initAdoptionTypeInput,
+                              JComboBox<String> adoptionThresholdTypeInput, 
+                              JFormattedTextField graphSizeInput, 
+                              JFormattedTextField pInput, 
+                              JFormattedTextField edgeProbInput, 
+                              JFormattedTextField maxLinksInput, 
+                              JFormattedTextField sleepTimeInput, 
+                              JFormattedTextField decrementsInput, 
+                              JFormattedTextField neighborThresholdInput, 
+                              JFormattedTextField neighborThresholdPercentInput, 
+                              JCheckBox regressionCB,
+                              JFrame frame) {
     return new ActionListener() {
       public void actionPerformed(ActionEvent e) { 
-        onClick(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput, adoptionThresholdTypeInput, graphSizeInput, pInput, 
-                edgeProbInput, maxLinksInput, sleepTimeInput, decrementsInput, neighborThresholdInput, neighborThresholdPercentInput, frame);
+        onClick(graphGenTypeInput, adoptionTypeInput, initAdoptionTypeInput, 
+                adoptionThresholdTypeInput, graphSizeInput, pInput, 
+                edgeProbInput, maxLinksInput, sleepTimeInput, decrementsInput, 
+                neighborThresholdInput, neighborThresholdPercentInput, regressionCB, frame);
       }
     };
   }
 
   // Get values for all data selections made in the GUI and initiate the random graph generator and adoption process
   private static void onClick(JComboBox<String> graphGenTypeInput, 
-                              JComboBox<String> adoptionTypeInput, JComboBox<String> initAdoptionTypeInput,
-                              JComboBox<String> adoptionThresholdTypeInput, JFormattedTextField graphSizeInput, 
-                              JFormattedTextField pInput, JFormattedTextField edgeProbInput, 
-                              JFormattedTextField maxLinksInput, JFormattedTextField sleepTimeInput, 
-                              JFormattedTextField decrementsInput, JFormattedTextField neighborThresholdInput, 
-                              JFormattedTextField neighborThresholdPercentInput, JFrame frame) {
+                              JComboBox<String> adoptionTypeInput, 
+                              JComboBox<String> initAdoptionTypeInput,
+                              JComboBox<String> adoptionThresholdTypeInput, 
+                              JFormattedTextField graphSizeInput, 
+                              JFormattedTextField pInput, 
+                              JFormattedTextField edgeProbInput, 
+                              JFormattedTextField maxLinksInput, 
+                              JFormattedTextField sleepTimeInput, 
+                              JFormattedTextField decrementsInput, 
+                              JFormattedTextField neighborThresholdInput, 
+                              JFormattedTextField neighborThresholdPercentInput,
+                               JCheckBox regressionCB,
+                              JFrame frame) {
     // Get values for all data selections
     String graphGenType = (String)graphGenTypeInput.getSelectedItem();
     String adoptionType = (String)adoptionTypeInput.getSelectedItem();
@@ -247,12 +267,14 @@ public class GUI {
     int decrements = (int)decrementsInput.getValue();
     int neighborThreshold = (int)neighborThresholdInput.getValue();
     double neighborThresholdPercent = (double)neighborThresholdPercentInput.getValue();
+    boolean showRegressionChart = regressionCB.isSelected();
     
     // Initiate the random graph generator and adoption process
     try {
-      
-      graphProcessor.process(graphGenType, adoptionType, initAdoptionType, adoptionThresholdType, 
-                             graphSize, p, edgeProb, maxLinks, sleepTime, decrements, neighborThreshold, neighborThresholdPercent, frame);
+      graphProcessor.process(graphGenType, adoptionType, initAdoptionType, 
+                             adoptionThresholdType, graphSize, p, edgeProb, maxLinks, 
+                             sleepTime, decrements, neighborThreshold, 
+                             neighborThresholdPercent, showRegressionChart, frame);
      
     } catch (IOException error) {
       error.printStackTrace();

@@ -12,6 +12,7 @@ import org.graphstream.algorithm.Toolkit;
 
 import javax.swing.JTextArea;
 
+// Complex adoption process
 public class complexAdoption {
   static int Yt = 0; // Y(t)
   static int intAdoptionCount = 0;
@@ -20,11 +21,11 @@ public class complexAdoption {
   static int adoptionNotHappenStreak = 0;
   static boolean adoptionHappen;
 	
-  // Start the complex adoption process
+  // Method to adopt the graph
   public static Graph adopt(Graph g, double p, int graphSize, String initAdoptionType, 
                             String adoptionThresholdType, int sleepTime, 
                             FileWriter timestepfw, FileWriter regressionAnalysisfw,
-                            int decrements, int neighborThreshold, double neighborThresholdAsPercentage) throws IOException {
+                            int decrements, int neighborThreshold, double neighborThresholdPercent) throws IOException {
     g.addAttribute("ui.stylesheet", stylesheet);
     
     // Create textArea which displays timestepData
@@ -34,13 +35,14 @@ public class complexAdoption {
     int[] extAdopters = new int[10*graphSize];
     int[] intAdopters = new int[10*graphSize];
 
-    // Split p into x decrements so can decrement p at a steady rate 
+    // Split p into x decrements so can decrement p (external adoption) 
+    // at a steady rate alongside internal adoption
     double pDecrementValue = p/decrements;
     double pDecrementer = p;
     boolean pDecrementerFinished = false;
     
     // Calculate x% all nodes to nearest whole number
-    int neighborPercentOfAllNodes = (int) Math.round(neighborThresholdAsPercentage*g.getNodeCount());
+    int neighborPercentOfAllNodes = (int) Math.round(neighborThresholdPercent*g.getNodeCount());
 
     do {
       adoptionHappen = false;
@@ -51,7 +53,9 @@ public class complexAdoption {
       intAdopters[t] = intAdoptionCount;
 
       // Print timestep data to timestep data GUI
-      textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " +extAdoptionCount+ "\t No. Internal Adoptions: " + intAdoptionCount +"\n");
+      textArea.append("t: " +t+ "\t Y(t): " +Yt+ "\t No. External Adoptions: " 
+                      +extAdoptionCount+ "\t No. Internal Adoptions: " 
+                      +intAdoptionCount +"\n");
       
       // Impose initial adoption externally - either randomly selected nodes or most popular nodes
       if (Yt == 0) {
@@ -63,44 +67,55 @@ public class complexAdoption {
         }
         pDecrementer -= pDecrementValue;
       }
-      // If isn't initial adoption, either combine external and internal adoption, or just do internal adoption if external decrementer has finished (below 0)
+      // If isn't initial adoption, combine external and internal adoption,
+      // or just do internal adoption if external decrementer has finished 
       else {
         if (pDecrementer > 0) {
           g = randomExternalAdoption(g, pDecrementer, sleepTime);
           pDecrementer -= pDecrementValue;
-          // choose threshold type
+          
+          // Choose threshold type
           switch (adoptionThresholdType) {
-     	    case "x neighbors adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors adopted": 
+     	      g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
-            case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+          case "No. neighbors adopted >= x% total nodes": 
+            g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
             break;
-            case "Neighbor degree > average degree distribution": g = degreeInternalAdoption(g, sleepTime);
+          case "Neighbor degree > average degree distribution": 
+            g = degreeInternalAdoption(g, sleepTime);
             break;
           }
         }
         else {
           pDecrementerFinished = true;
           switch (adoptionThresholdType) {
-     	    case "x neighbors adopted": g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
+     	    case "x neighbors adopted": 
+     	      g = neighborInternalAdoption(g, sleepTime, neighborThreshold);
             break;
-            case "No. neighbors adopted >= x% total nodes": g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
+          case "No. neighbors adopted >= x% total nodes":
+            g = neighborInternalAdoption(g, sleepTime, neighborPercentOfAllNodes);
             break;
-            case "Neighbor degree > average degree distribution": g = degreeInternalAdoption(g, sleepTime);
+          case "Neighbor degree > average degree distribution": 
+            g = degreeInternalAdoption(g, sleepTime);
             break;
           }
         }
       }
 
+      // Reset all nodes which have just been adopted for each iteration
       for (Node n:g) {
         if (n.hasAttribute("just_adopted")) {
           n.removeAttribute("just_adopted");
         }
       }
  
-      //exportCSV files
-      timestepfw.write(t + "," + Yt + "," + extAdoptionCount + "," + intAdoptionCount + "\n");
+      // Export timestep data and regression data CSV files
+      timestepfw.write(t + "," + Yt + "," +extAdoptionCount+ "," +intAdoptionCount+ "\n");
       regressionAnalysisfw.write(Yt+"\n");      
       t++;
+      
+      // Have a streak to ensure complex adoption process has finished
       if (!adoptionHappen) {
         adoptionNotHappenStreak++;
       }
@@ -128,17 +143,16 @@ public class complexAdoption {
       // If random adoption has been selected as initial adoption type
       if (!n.hasAttribute("adopted") && Math.random() < p) {
         n.setAttribute("adopted");
-        //n.setAttribute("just_adopted"); 
         n.setAttribute("ui.class", "adopted");
         adoptionHappen = true;
-	sleep(sleepTime);
-   	extAdoptionCount++;
+	      sleep(sleepTime);
+   	    extAdoptionCount++;
       }
     }
     return g;
   }
    
-  // Adopt a set percentage of most popular nodes externally 
+  // Adopt a p% most popular nodes externally 
   public static Graph popularExternalAdoption(Graph g, double p, int sleepTime) {
     Toolkit tk = new Toolkit();
     
@@ -152,7 +166,6 @@ public class complexAdoption {
       if (!nextNode.hasAttribute("adopted")) {
         nextNode.setAttribute("adopted");
         nextNode.setAttribute("ui.class", "adopted");
-        //nextNode.setAttribute("just_adopted"); 
         adoptionHappen = true;
         sleep(sleepTime);
         extAdoptionCount++;
@@ -161,7 +174,7 @@ public class complexAdoption {
     return g;
   }
    
-  // Method to make neighbors of adopted nodes adopted under a threshold
+  // Adopt a node if a set number of it's neighbors are adopted
   private static Graph neighborInternalAdoption(Graph g, int sleepTime, int threshold) {
     for (Node n:g) {
       Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
@@ -183,14 +196,15 @@ public class complexAdoption {
         }
       }
       
-      // If a node's number of adopted neighbors exceeds threshold and isn't already adopted, adopt the node
+      // If a node's number of adopted neighbors exceeds threshold and isn't already adopted
+      // adopt this node
       if (adoptedNeighborCount >= threshold && !n.hasAttribute("adopted")) {
         n.setAttribute("adopted"); 
-    	n.setAttribute("ui.class", "adopted");
+    	  n.setAttribute("ui.class", "adopted");
         n.setAttribute("just_adopted"); 
         adoptionHappen = true;
-	sleep(sleepTime);
-    	intAdoptionCount++;
+	      sleep(sleepTime);
+    	  intAdoptionCount++;
       }
     }
     return g;
@@ -199,7 +213,9 @@ public class complexAdoption {
   // Make a node's neighbor adopted if it has degree > average of all node degrees
   private static Graph degreeInternalAdoption(Graph g, int sleepTime) {
     Toolkit tk = new Toolkit();
+    // Calculate the average degree of all nodes in the graph
     double averageDegree = tk.averageDegree(g);
+    
     for (Node n:g) {
       Iterator<? extends Edge> edgesOfNodeN = n.getEdgeIterator();
       List<Node> neighbors = new ArrayList<Node>();
@@ -215,16 +231,16 @@ public class complexAdoption {
         }
       }
       
-      // For each neighbor of this node, if the neighbor is not adopted and 
-      //the neighbor's degree exceeds average degree distribution, adopt the neighbor
+      // For each neighbor of this node, if neighbor not adopted and 
+      // neighbor degree > average degree distribution, adopt the neighbor
       for (Node neighbor:neighbors) {
         if (!neighbor.hasAttribute("adopted") && neighbor.getDegree()>averageDegree) {
           neighbor.setAttribute("adopted"); 
       	  neighbor.setAttribute("ui.class", "adopted");
           neighbor.setAttribute("just_adopted"); 
           adoptionHappen = true;
-	  sleep(sleepTime);
-    	  intAdoptionCount++;
+	        sleep(sleepTime);
+    	    intAdoptionCount++;
         }
       }
     }
